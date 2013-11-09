@@ -1,0 +1,190 @@
+name:                nacl
+version:             0.0.0.0
+category:            Cryptography, Networking
+license:             MIT
+synopsis:            Networking and Cryptography library
+homepage:            https://github.com/thoughtpolice/hs-nacl/wiki
+bug-reports:         http://github.com/thoughtpolice/hs-nacl/issues
+license-file:        LICENSE.txt
+copyright:           Copyright (c) Austin Seipp 2011-2013
+author:              Austin Seipp
+maintainer:          Austin Seipp <aseipp@pobox.com>
+build-type:          Simple
+cabal-version:       >=1.10
+tested-with:         GHC == 6.12.3, GHC == 7.0.1, GHC == 7.0.2, GHC == 7.0.3,
+                     GHC == 7.0.4,  GHC == 7.2.1, GHC == 7.2.2, GHC == 7.4.1,
+                     GHC == 7.4.2,  GHC == 7.6.1,  GHC == 7.6.2, GHC == 7.6.3
+
+description:
+  NaCl (pronounced \"salt\") is a safe, high-speed, easy to use
+  cryptography library - the project was initiated
+  by CACE (Computer Aided Cryptography Engineering,) and is currently
+  lead by Dan J. Bernstein and Tanja Lange. It's designed to be
+  considerably faster and easier to use (e.g. simple APIs, good
+  selection of default primitives) than alternative crypto libraries
+  like OpenSSL.
+  .
+  This package provides a high level interface to NaCl and all its
+  basic APIs. It also includes some extra primitives for certain
+  operations including siphash, BLAKE and BLAKE2, ed25519, a full
+  curve25519 interface, and windows support.
+  .
+  Note that this version of nacl is is patched to include an
+  implementation of Ed25519 for the signature API. This signing system
+  will be the default in future NaCl versions.
+  .
+  See more details including documentation, examples, test coverage
+  reports, and benchmarks, here:
+  <https://github.com/thoughtpolice/hs-nacl/wiki>
+
+extra-source-files:
+  .travis.yml
+  AUTHORS.txt
+  README.md
+  CONTRIBUTING.md
+  CHANGELOG.md
+  src/cbits/util/*.c src/cbits/util/*.h
+  src/cbits/blake/*.c src/cbits/blake/*.h
+  src/cbits/blake2/*.c src/cbits/blake2/*.h
+  src/cbits/curve25519/*.c src/cbits/curve25519/*.h
+  src/cbits/curve25519xsalsa20poly1305/*.c src/cbits/curve25519xsalsa20poly1305/*.h
+  src/cbits/ed25519/*.c src/cbits/ed25519/*.h
+  src/cbits/hmac-sha512256/*.c src/cbits/hmac-sha512256/*.h
+  src/cbits/poly1305/*.c src/cbits/poly1305/*.h
+  src/cbits/sha/*.c src/cbits/sha/*.h
+  src/cbits/siphash2448/*.c src/cbits/siphash2448/*.h
+  src/cbits/xsalsa20/*.c src/cbits/xsalsa20/*.h
+  src/cbits/xsalsa20poly1305/*.c src/cbits/xsalsa20poly1305/*.h
+  tests/*.hs
+  benchmarks/*.hs
+
+source-repository head
+  type: git
+  location: https://github.com/thoughtpolice/hs-nacl.git
+
+-------------------------------------------------------------------------------
+-- Flags
+
+flag test-properties
+  default: True
+  manual: True
+
+flag test-hlint
+  default: True
+  manual: True
+
+flag doctest
+  default: True
+  manual: True
+
+-------------------------------------------------------------------------------
+-- Build pt 1: main project
+
+library
+  ghc-options:        -Wall -fwarn-tabs
+  default-language:   Haskell98
+  hs-source-dirs:     src
+
+  build-depends:
+    base >= 4 && < 5,
+    bytestring >= 0.9 && < 0.11
+
+  exposed-modules:
+    Crypto.DH.Curve25519
+    Crypto.Encrypt.Box
+    Crypto.Encrypt.SecretBox
+    Crypto.Encrypt.Stream
+    Crypto.Hash.BLAKE
+    Crypto.Hash.BLAKE2
+    Crypto.Hash.SHA
+    Crypto.HMAC.SHA512
+    Crypto.MAC.Poly1305
+    Crypto.MAC.Siphash24
+    Crypto.MAC.Siphash48
+    Crypto.Nonce
+    Crypto.Sign.Ed25519
+    System.Crypto.Random
+
+  cc-options:   -std=c99
+  include-dirs: src/cbits/util
+  c-sources:
+    src/cbits/util/randombytes.c src/cbits/util/nonce.c
+    src/cbits/blake/blake256.c src/cbits/blake/blake512.c
+    src/cbits/blake2/blake2b-ref.c src/cbits/blake2/blake2bp-ref.c
+    src/cbits/blake2/blake2s-ref.c src/cbits/blake2/blake2sp-ref.c
+    src/cbits/curve25519/curve25519.c
+    src/cbits/curve25519xsalsa20poly1305/curve25519xsalsa20poly1305.c
+    src/cbits/ed25519/ed25519.c
+    src/cbits/hmac-sha512256/hmac-sha512256.c
+    src/cbits/poly1305/poly1305.c
+    src/cbits/sha/sha256.c src/cbits/sha/sha512.c
+    src/cbits/siphash2448/siphash2448.c
+    src/cbits/xsalsa20/xsalsa20.c
+    src/cbits/xsalsa20poly1305/xsalsa20poly1305.c
+    src/cbits/curve25519xsalsa20poly1305/curve25519xsalsa20poly1305.c
+
+-------------------------------------------------------------------------------
+-- Build pt 2: Tests
+
+test-suite properties
+  type:             exitcode-stdio-1.0
+  main-is:          properties.hs
+  ghc-options:      -Wall -fwarn-tabs
+  hs-source-dirs:   tests
+  default-language: Haskell98
+
+  if !flag(test-properties)
+    buildable: False
+  else
+    build-depends:
+      base,
+      nacl,
+      bytestring,
+      QuickCheck  >= 2.4
+
+--
+-- Style/doc tests below
+--
+
+test-suite hlint
+  type:             exitcode-stdio-1.0
+  main-is:          hlint.hs
+  ghc-options:      -Wall -fwarn-tabs
+  hs-source-dirs:   tests
+  default-language: Haskell98
+
+  if !flag(test-hlint)
+    buildable: False
+  else
+    build-depends:
+      base, hlint >= 1.7
+
+test-suite doctests
+  type:             exitcode-stdio-1.0
+  main-is:          doctests.hs
+  ghc-options:      -threaded -Wall -fwarn-tabs
+  hs-source-dirs:   tests
+  default-language: Haskell98
+
+  if !flag(doctest)
+    buildable: False
+  else
+    build-depends:
+      base, directory, filepath, doctest >= 0.8
+
+-------------------------------------------------------------------------------
+-- Build pt 3: benchmarks
+
+benchmark bench
+  type:             exitcode-stdio-1.0
+  main-is:          bench.hs
+  ghc-options:      -Wall -fwarn-tabs
+  hs-source-dirs:   benchmarks
+  default-language: Haskell98
+
+  build-depends:
+    base >= 4 && < 5,
+    bytestring,
+    criterion,
+    deepseq,
+    nacl

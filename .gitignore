@@ -1,0 +1,13 @@
+/.cabal-sandbox/
+/dist/
+/bench/*.html
+/.hpc/
+/hpc_out/
+cabal.sandbox.config
+*.html
+*.tix
+*.o
+*.hi
+*~
+*#
+\.#*

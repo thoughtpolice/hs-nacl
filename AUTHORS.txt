@@ -1,0 +1,12 @@
+Author, target of blame:
+
+  Austin Seipp <aseipp [@at] pobox [.dot] com>
+
+Friends who contributed discussion/ideas/patches in no particular
+order:
+
+Daniel Peebles
+Michael Stone
+Johan Brinch
+Joseph Abrahamson
+Shachaf Ben-Kiki
