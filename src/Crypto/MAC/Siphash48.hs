@@ -99,7 +99,7 @@ authenticate (Key k) msg =
     unsafeUseAsCStringLen msg $ \(cstr, clen) ->
       unsafeUseAsCString k $ \pk ->
         c_crypto_siphash48 out cstr (fromIntegral clen) pk >> return ()
-{-# INLINEABLE authenticate #-}
+{-# INLINE authenticate #-}
 
 -- | @'verify' k a m@ verifies @a@ is the correct authenticator of @m@
 -- under a secret @'Key'@ @k@.
