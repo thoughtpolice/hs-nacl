@@ -27,14 +27,13 @@ module Crypto.Encrypt.SecretBox
 
          -- * Types
          SecretBox -- :: *
-       , Key(..)   -- :: *
 
          -- * Key creation
-       , randomKey -- :: IO Key
+       , randomKey -- :: IO (SecretKey SecretBox)
 
          -- * Encrypting messages
-       , encrypt -- :: Nonce SecretBox -> ByteString -> Key -> ByteString
-       , decrypt -- :: Nonce SecretBox -> ByteString -> Key -> Maybe ByteString
+       , encrypt -- :: Nonce SecretBox -> ByteString -> SecretKey SecretBox -> ByteString
+       , decrypt -- :: Nonce SecretBox -> ByteString -> SecretKey SecretBox -> Maybe ByteString
        ) where
 import           Data.Word
 import           Foreign.C.Types
@@ -48,6 +47,7 @@ import           Data.ByteString          as S
 import           Data.ByteString.Internal as SI
 import           Data.ByteString.Unsafe   as SU
 
+import           Crypto.Key
 import           Crypto.Nonce
 import           System.Crypto.Random
 
@@ -74,16 +74,12 @@ data SecretBox
 instance Nonces SecretBox where
   nonceSize _ = xsalsa20poly1305NONCEBYTES
 
--- | A @'Key'@ is a secret key used for authenticated encryption - be
--- sure to keep it safe!
-data Key = Key { unKey :: ByteString }
-
 -- | Generate a random key for performing encryption.
-randomKey :: IO Key
-randomKey = Key `fmap` randombytes xsalsa20poly1305KEYBYTES
+randomKey :: IO (SecretKey SecretBox)
+randomKey = SecretKey `fmap` randombytes xsalsa20poly1305KEYBYTES
 
 -- | The @'encrypt'@ function encrypts and authenticates a message @m@
--- using a secret @'Key'@ @k@, and a @'Nonce'@ @n@.
+-- using a secret @'SecretKey'@ @k@, and a @'Nonce'@ @n@.
 --
 -- This function produces ciphertext compatible with the NaCl
 -- @crypto_secretbox@ function.
@@ -91,11 +87,11 @@ encrypt :: Nonce SecretBox
         -- ^ Nonce
         -> ByteString
         -- ^ Input
-        -> Key
+        -> SecretKey SecretBox
         -- ^ Secret key
         -> ByteString
         -- ^ Ciphertext
-encrypt (Nonce n) msg (Key k) = unsafePerformIO $ do
+encrypt (Nonce n) msg (SecretKey k) = unsafePerformIO $ do
   -- inputs to crypto_box must be padded
   let m    = S.replicate xsalsa20poly1305ZEROBYTES 0x0 `S.append` msg
       mlen = S.length m
@@ -121,11 +117,11 @@ decrypt :: Nonce SecretBox
         -- ^ Nonce
         -> ByteString
         -- ^ Input
-        -> Key
+        -> SecretKey SecretBox
         -- ^ Secret key
         -> Maybe ByteString
         -- ^ Ciphertext
-decrypt (Nonce n) cipher (Key k) = unsafePerformIO $ do
+decrypt (Nonce n) cipher (SecretKey k) = unsafePerformIO $ do
   let c    = cipher
       clen = S.length c
       mlen = (clen - xsalsa20poly1305BOXZEROBYTES)

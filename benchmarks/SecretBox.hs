@@ -3,6 +3,7 @@ module SecretBox
        ) where
 import           Criterion.Main
 import           Crypto.Encrypt.SecretBox
+import           Crypto.Key
 import           Crypto.Nonce
 
 import           Data.ByteString          (ByteString)
@@ -18,7 +19,7 @@ benchmarks = do
   return [ bench "roundtrip 512" $ nf (roundtrip key nonce) dummy512
          ]
 
-roundtrip :: Key -> Nonce SecretBox -> ByteString -> Bool
+roundtrip :: SecretKey SecretBox -> Nonce SecretBox -> ByteString -> Bool
 roundtrip key nonce xs =
   let enc = encrypt nonce xs key
       dec = decrypt nonce enc key

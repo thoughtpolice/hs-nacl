@@ -4,13 +4,16 @@ module Curve25519
        ) where
 import           Criterion.Main
 import           Crypto.DH.Curve25519
+import           Crypto.Key
 
 import           Control.DeepSeq
 
 import           Util                 ()
 
-instance NFData SecretKey
-instance NFData PublicKey
+instance NFData (SecretKey t)
+instance NFData (PublicKey t)
+
+type KP = (PublicKey Curve25519, SecretKey Curve25519)
 
 benchmarks :: IO [Benchmark]
 benchmarks = do
@@ -21,7 +24,5 @@ benchmarks = do
          , bench "roundtrip"     $ nf (roundtrip keys1) keys2
          ]
 
-roundtrip :: (PublicKey, SecretKey)
-          -> (PublicKey, SecretKey)
-          -> Bool
+roundtrip :: KP -> KP -> Bool
 roundtrip (p1,s2) (p2,s1) = curve25519 s1 p1 == curve25519 s2 p2

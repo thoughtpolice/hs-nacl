@@ -3,6 +3,7 @@ module Siphash48
        ( benchmarks -- :: IO [Benchmark]
        ) where
 import           Criterion.Main
+import           Crypto.Key
 import           Crypto.MAC.Siphash48
 
 import           Control.DeepSeq
@@ -15,12 +16,12 @@ instance NFData Auth
 benchmarks :: IO [Benchmark]
 benchmarks = do
   let dummy = B.pack [1..512]
-      k     = fromMaybe (error "impossible") (key $ B.pack [0..15])
+      k     = SecretKey (B.pack [0..15])
       msg   = authenticate k dummy
   return [ bench "authenticate" $ nf (authenticate k) dummy
          , bench "verify"       $ nf (verify k)       msg
          , bench "roundtrip"    $ nf (roundtrip k)    dummy
          ]
 
-roundtrip :: Key -> B.ByteString -> Bool
+roundtrip :: SecretKey Siphash48 -> B.ByteString -> Bool
 roundtrip k xs = verify k (authenticate k xs) xs

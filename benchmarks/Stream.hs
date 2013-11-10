@@ -3,6 +3,7 @@ module Stream
        ) where
 import           Criterion.Main
 import           Crypto.Encrypt.Stream
+import           Crypto.Key
 import           Crypto.Nonce
 
 import           Data.ByteString       (ByteString)
@@ -18,7 +19,7 @@ benchmarks = do
   return [ bench "roundtrip 512" $ nf (roundtrip key nonce) dummy512
          ]
 
-roundtrip :: Key -> Nonce Stream -> ByteString -> Bool
+roundtrip :: SecretKey Stream -> Nonce Stream -> ByteString -> Bool
 roundtrip key nonce xs =
   let enc = encrypt nonce xs key
       dec = decrypt nonce enc key

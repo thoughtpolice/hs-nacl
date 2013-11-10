@@ -28,18 +28,16 @@ module Crypto.Encrypt.Box
 
          -- * Types
          Box           -- :: *
-       , PublicKey(..) -- :: *
-       , SecretKey(..) -- :: *
-       , createKeypair -- :: IO (PublicKey, SecretKey)
+       , createKeypair -- :: IO (PublicKey Box, SecretKey Box)
 
          -- * Encrypting messages
-       , encrypt -- :: Nonce Box -> ByteString -> PublicKey -> SecretKey -> ByteString
-       , decrypt -- :: Nonce Box -> ByteString -> PublicKey -> SecretKey -> Maybe ByteString
+       , encrypt -- :: Nonce Box -> ByteString -> PublicKey Box -> SecretKey Box ->  ByteString
+       , decrypt -- :: Nonce Box -> ByteString -> PublicKey Box -> SecretKey Box -> Maybe ByteString
 
          -- * Precomputation interface
          -- $precomp
        , NM        -- :: *
-       , createNM  -- :: PublicKey -> SecretKey -> NM
+       , createNM  -- :: PublicKey Box -> SecretKey Box -> NM
        , encryptNM -- :: NM -> Nonce Box -> ByteString -> ByteString
        , decryptNM -- :: NM -> Nonce Box -> ByteString -> Maybe ByteString
        ) where
@@ -54,6 +52,7 @@ import           Data.ByteString          as S
 import           Data.ByteString.Internal as SI
 import           Data.ByteString.Unsafe   as SU
 
+import           Crypto.Key
 import           Crypto.Nonce
 
 -- $securitymodel
@@ -102,18 +101,9 @@ data Box
 instance Nonces Box where
   nonceSize _ = boxNONCEBYTES
 
--- | A @'SecretKey'@ created by @'createKeypair'@. Be sure to keep
--- this safe!
-newtype SecretKey = SecretKey { unSecretKey :: ByteString }
-        deriving (Eq, Show, Ord)
-
--- | A @'PublicKey'@ created by @'createKeypair'@.
-newtype PublicKey = PublicKey { unPublicKey :: ByteString }
-        deriving (Eq, Show, Ord)
-
 -- | The @'createKeypair'@ function randomly generates a secret key and
 -- a corresponding public key.
-createKeypair :: IO (PublicKey, SecretKey)
+createKeypair :: IO (PublicKey Box, SecretKey Box)
 createKeypair = do
   pk <- SI.mallocByteString boxPUBLICKEYBYTES
   sk <- SI.mallocByteString boxSECRETKEYBYTES
@@ -137,9 +127,9 @@ encrypt :: Nonce Box
         -- ^ Nonce
         -> ByteString
         -- ^ Message
-        -> PublicKey
+        -> PublicKey Box
         -- ^ Recievers public key
-        -> SecretKey
+        -> SecretKey Box
         -- ^ Senders secret key
         -> ByteString
         -- ^ Ciphertext
@@ -170,9 +160,9 @@ decrypt :: Nonce Box
         -- ^ Nonce
         -> ByteString
         -- ^ Input ciphertext
-        -> PublicKey
+        -> PublicKey Box
         -- ^ Senders public key
-        -> SecretKey
+        -> SecretKey Box
         -- ^ Recievers secret key
         -> Maybe ByteString -- ^ Ciphertext
 decrypt (Nonce n) cipher (PublicKey pk) (SecretKey sk) = unsafePerformIO $ do
@@ -225,7 +215,7 @@ newtype NM = NM ByteString deriving (Eq, Show)
 -- | Creates an intermediate piece of @'NM'@ data for
 -- sending/receiving messages to/from the same person. The resulting
 -- 'NM' can be used for any number of messages between client/server.
-createNM :: PublicKey -> SecretKey -> NM
+createNM :: PublicKey Box -> SecretKey Box -> NM
 createNM (PublicKey pk) (SecretKey sk) = unsafePerformIO $ do
   nm <- SI.mallocByteString boxBEFORENMBYTES
   _ <- withForeignPtr nm $ \pnm ->

@@ -5,6 +5,7 @@ module Curve25519
 import           Control.Monad
 
 import           Crypto.DH.Curve25519
+import           Crypto.Key
 
 import           Test.QuickCheck
 import           Test.QuickCheck.Property (morallyDubiousIOProperty)
@@ -13,7 +14,7 @@ import           Util
 --------------------------------------------------------------------------------
 -- Diffie-Hellman key exchange
 
-type KP = (PublicKey, SecretKey)
+type KP = (PublicKey Curve25519, SecretKey Curve25519)
 
 keypairProp :: (KP -> KP -> Bool) -> Property
 keypairProp k = morallyDubiousIOProperty $ liftM2 k createKeypair createKeypair

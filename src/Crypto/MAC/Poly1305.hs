@@ -1,3 +1,4 @@
+{-# LANGUAGE EmptyDataDecls           #-}
 {-# LANGUAGE ForeignFunctionInterface #-}
 -- |
 -- Module      : Crypto.MAC.Poly1305
@@ -25,16 +26,15 @@ module Crypto.MAC.Poly1305
          -- $securitymodel
 
          -- * Types
-         Key          -- :: *
+         Poly1305     -- :: *
        , Auth(..)     -- :: *
 
          -- * Key creation
-       , key          -- :: ByteString -> Maybe Key
-       , randomKey    -- :: IO Key
+       , randomKey    -- :: IO (SecretKey Poly1305)
 
          -- * One-time authentication
-       , authenticate -- :: Key -> ByteString -> Auth
-       , verify       -- :: Key -> Auth -> ByteString -> Bool
+       , authenticate -- :: SecretKey Poly1305 -> ByteString -> Auth
+       , verify       -- :: SecretKey Poly1305 -> Auth -> ByteString -> Bool
        ) where
 import           Data.Word
 import           Foreign.C.Types
@@ -43,10 +43,10 @@ import           Foreign.Ptr
 import           System.IO.Unsafe         (unsafePerformIO)
 
 import           Data.ByteString          (ByteString)
-import qualified Data.ByteString          as S
 import           Data.ByteString.Internal (create)
 import           Data.ByteString.Unsafe
 
+import           Crypto.Key
 import           System.Crypto.Random
 
 -- $securitymodel
@@ -62,20 +62,11 @@ import           System.Crypto.Random
 -- under the same key should be expected to reveal enough information
 -- to allow forgeries of authenticators on other messages.
 
--- | A @'Key'@ is a secret key used for authentication - be sure to
--- keep it safe!
-newtype Key = Key ByteString
-  deriving (Eq, Show, Ord)
-
--- | Create a key from a @'ByteString'@. Must be exactly 32 bytes in
--- length.
-key :: ByteString -> Maybe Key
-key xs | S.length xs /= onetimeauthKEYBYTES = Nothing
-       | otherwise = Just (Key xs)
+data Poly1305
 
 -- | Generate a random key for performing encryption.
-randomKey :: IO Key
-randomKey = Key `fmap` randombytes onetimeauthKEYBYTES
+randomKey :: IO (SecretKey Poly1305)
+randomKey = SecretKey `fmap` randombytes onetimeauthKEYBYTES
 
 -- | An authenticator.
 newtype Auth = Auth { unAuth :: ByteString }
@@ -83,13 +74,13 @@ newtype Auth = Auth { unAuth :: ByteString }
 
 -- | @'authenticate' k m@ authenticates a message @'m'@ using a secret
 -- @'Key'@ @k@ and returns the authenticator, @'Auth'@.
-authenticate :: Key
+authenticate :: SecretKey Poly1305
              -- ^ Secret key
              -> ByteString
              -- ^ Message
              -> Auth
              -- ^ Authenticator
-authenticate (Key k) msg =
+authenticate (SecretKey k) msg =
   Auth . unsafePerformIO . create onetimeauthBYTES $ \out ->
     unsafeUseAsCStringLen msg $ \(cstr, clen) ->
       unsafeUseAsCString k $ \pk ->
@@ -98,7 +89,7 @@ authenticate (Key k) msg =
 
 -- | @'verify' k a m@ verifies @a@ is the correct authenticator of @m@
 -- under a secret @'Key'@ @k@.
-verify :: Key
+verify :: SecretKey Poly1305
        -- ^ Secret key
        -> Auth
        -- ^ Authenticator returned via 'authenticateOnce'
@@ -106,7 +97,7 @@ verify :: Key
        -- ^ Message
        -> Bool
        -- ^ Result: @True@ if verified, @False@ otherwise
-verify (Key k) (Auth auth) msg =
+verify (SecretKey k) (Auth auth) msg =
   unsafePerformIO . unsafeUseAsCString auth $ \pauth ->
     unsafeUseAsCStringLen msg $ \(cstr, clen) ->
       unsafeUseAsCString k $ \pk -> do

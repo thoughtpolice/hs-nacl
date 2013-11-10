@@ -3,6 +3,7 @@ module Box
        ) where
 import           Criterion.Main
 import           Crypto.Encrypt.Box
+import           Crypto.Key
 import           Crypto.Nonce
 
 import           Data.ByteString    (ByteString)
@@ -10,7 +11,7 @@ import qualified Data.ByteString    as B
 
 import           Util               ()
 
-type Keypair = (PublicKey, SecretKey)
+type Keypair = (PublicKey Box, SecretKey Box)
 
 benchmarks :: IO [Benchmark]
 benchmarks = do

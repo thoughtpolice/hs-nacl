@@ -5,9 +5,9 @@ module HMACSHA512
 import           Control.Monad
 import           Data.ByteString    (ByteString)
 import qualified Data.ByteString    as S
-import           Data.Maybe
 
 import           Crypto.HMAC.SHA512
+import           Crypto.Key
 
 import           Test.QuickCheck
 import           Util
@@ -24,7 +24,7 @@ instance Arbitrary K2 where
 
 roundtrip :: K2 -> ByteString -> Bool
 roundtrip (K2 k) xs = verify k' (authenticate k' xs) xs
-  where k' = fromMaybe (error "impossible") (key k)
+  where k' = SecretKey k
 
 
 tests :: Int -> Tests

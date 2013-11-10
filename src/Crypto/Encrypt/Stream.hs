@@ -25,15 +25,14 @@ module Crypto.Encrypt.Stream
 
          -- * Types
          Stream    -- :: *
-       , Key(..)   -- :: *
 
          -- * Key creation
-       , randomKey -- :: IO Key
+       , randomKey -- :: IO (SecretKey Stream)
 
          -- * Encrypting messages
-       , stream    -- :: Nonce Stream -> Int -> Key -> ByteString
-       , encrypt   -- :: Nonce Stream -> ByteString -> Key -> ByteString
-       , decrypt   -- :: Nonce Stream -> ByteString -> Key -> ByteString
+       , stream    -- :: Nonce Stream -> Int -> SecretKey Stream -> ByteString
+       , encrypt   -- :: Nonce Stream -> ByteString -> SecretKey Stream -> ByteString
+       , decrypt   -- :: Nonce Stream -> ByteString -> SecretKey Stream -> ByteString
        ) where
 import           Data.Word
 import           Foreign.C.Types
@@ -45,6 +44,7 @@ import           Data.ByteString          as S
 import           Data.ByteString.Internal as SI
 import           Data.ByteString.Unsafe   as SU
 
+import           Crypto.Key
 import           Crypto.Nonce
 import           System.Crypto.Random
 
@@ -81,13 +81,9 @@ data Stream
 instance Nonces Stream where
   nonceSize _ = xsalsa20NONCEBYTES
 
--- | A @'Key'@ is a secret key used for authenticated encryption - be
--- sure to keep it safe!
-data Key = Key { unKey :: ByteString }
-
 -- | Generate a random key for performing encryption.
-randomKey :: IO Key
-randomKey = Key `fmap` randombytes xsalsa20KEYBYTES
+randomKey :: IO (SecretKey Stream)
+randomKey = SecretKey `fmap` randombytes xsalsa20KEYBYTES
 
 -- | Given a @'Nonce'@ @n@, size @s@ and @'Key'@ @k@, @'stream' n s k@
 -- generates a cryptographic stream of length @s@.
@@ -95,11 +91,11 @@ stream :: Nonce Stream
        -- ^ Nonce
        -> Int
        -- ^ Size
-       -> Key
+       -> SecretKey Stream
        -- ^ Key
        -> ByteString
        -- ^ Resulting crypto stream
-stream (Nonce n) sz (Key sk)
+stream (Nonce n) sz (SecretKey sk)
   = unsafePerformIO . SI.create sz $ \out ->
     SU.unsafeUseAsCString n $ \pn ->
       SU.unsafeUseAsCString sk $ \psk -> do
@@ -117,11 +113,11 @@ encrypt :: Nonce Stream
         -- ^ Nonce
         -> ByteString
         -- ^ Input plaintext
-        -> Key
+        -> SecretKey Stream
         -- ^ Key
         -> ByteString
         -- ^ Ciphertext
-encrypt (Nonce n) msg (Key sk)
+encrypt (Nonce n) msg (SecretKey sk)
   = let l = S.length msg
     in unsafePerformIO . SI.create l $ \out ->
     SU.unsafeUseAsCString msg $ \cstr ->
@@ -136,7 +132,7 @@ decrypt :: Nonce Stream
         -- ^ Nonce
         -> ByteString
         -- ^ Input ciphertext
-        -> Key
+        -> SecretKey Stream
         -- ^ Key
         -> ByteString
         -- ^ Plaintext

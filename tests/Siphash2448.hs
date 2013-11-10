@@ -5,8 +5,8 @@ module Siphash2448
 import           Control.Monad
 import           Data.ByteString      (ByteString)
 import qualified Data.ByteString      as S
-import           Data.Maybe
 
+import           Crypto.Key
 import qualified Crypto.MAC.Siphash24 as Siphash24
 import qualified Crypto.MAC.Siphash48 as Siphash48
 
@@ -25,11 +25,11 @@ instance Arbitrary K2 where
 
 roundtrip24 :: K2 -> ByteString -> Bool
 roundtrip24 (K2 k) xs = Siphash24.verify k' (Siphash24.authenticate k' xs) xs
-  where k' = fromMaybe (error "impossible") (Siphash24.key k)
+  where k' = SecretKey k
 
 roundtrip48 :: K2 -> ByteString -> Bool
 roundtrip48 (K2 k) xs = Siphash48.verify k' (Siphash48.authenticate k' xs) xs
-  where k' = fromMaybe (error "impossible") (Siphash48.key k)
+  where k' = SecretKey k
 
 
 tests :: Int -> Tests

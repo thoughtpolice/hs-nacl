@@ -1,3 +1,4 @@
+{-# LANGUAGE EmptyDataDecls           #-}
 {-# LANGUAGE ForeignFunctionInterface #-}
 -- |
 -- Module      : Crypto.Sign.Ed25519
@@ -26,16 +27,15 @@ module Crypto.Sign.Ed25519
          -- $securitymodel
 
          -- * Keypair creation
-         PublicKey(..)       -- :: *
-       , SecretKey(..)       -- :: *
-       , createKeypair       -- :: IO (PublicKey, SecretKey)
+         Ed25519
+       , createKeypair       -- :: IO (PublicKey Ed25519, SecretKey Ed25519)
          -- * Signing and verifying messages
-       , sign                -- :: SecretKey -> ByteString -> ByteString
-       , verify              -- :: PublicKey -> ByteString -> Bool
+       , sign                -- :: SecretKey Ed25519 -> ByteString -> ByteString
+       , verify              -- :: PublicKey Ed25519 -> ByteString -> Bool
          -- * Detached signatures
        , Signature(..)       -- :: *
-       , sign'               -- :: SecretKey -> ByteString -> Signature
-       , verify'             -- :: PublicKey -> ByteString -> Signature -> Bool
+       , sign'               -- :: SecretKey Ed25519 -> ByteString -> Signature
+       , verify'             -- :: PublicKey Ed25519 -> ByteString -> Signature -> Bool
        ) where
 import           Foreign.C.Types
 import           Foreign.ForeignPtr       (withForeignPtr)
@@ -50,6 +50,8 @@ import           Data.ByteString.Internal as SI
 import           Data.ByteString.Unsafe   as SU
 import           Data.Word
 
+import           Crypto.Key
+
 -- $setup
 -- >>> import qualified Data.ByteString as B
 -- >>> let xs = B.pack [0..15]
@@ -62,18 +64,11 @@ import           Data.Word
 
 --------------------------------------------------------------------------------
 
--- | A @'SecretKey'@ created by @'createKeypair'@. Be sure to keep this
--- safe!
-newtype SecretKey = SecretKey { unSecretKey :: ByteString }
-        deriving (Eq, Show, Ord)
-
--- | A @'PublicKey'@ created by @'createKeypair'@.
-newtype PublicKey = PublicKey { unPublicKey :: ByteString }
-        deriving (Eq, Show, Ord)
+data Ed25519
 
 -- | Randomly generate a public and private key for doing
 -- authenticated signing and verification.
-createKeypair :: IO (PublicKey, SecretKey)
+createKeypair :: IO (PublicKey Ed25519, SecretKey Ed25519)
 createKeypair = do
   pk <- SI.mallocByteString cryptoSignPUBLICKEYBYTES
   sk <- SI.mallocByteString cryptoSignSECRETKEYBYTES
@@ -91,7 +86,7 @@ createKeypair = do
 -- Main API
 
 -- | Sign a message with a particular @'SecretKey'@.
-sign :: SecretKey
+sign :: SecretKey Ed25519
      -- ^ Signers secret key
      -> ByteString
      -- ^ Input message
@@ -111,7 +106,7 @@ sign (SecretKey sk) xs =
 -- >>> (pk,sk) <- createKeypair
 -- >>> verify pk (sign sk xs)
 -- True
-verify :: PublicKey
+verify :: PublicKey Ed25519
        -- ^ Signers public key
        -> ByteString
        -- ^ Signed message
@@ -137,7 +132,7 @@ newtype Signature = Signature { unSignature :: ByteString }
 
 -- | Sign a message with a particular @'SecretKey'@, only returning
 -- the signature without the message.
-sign' :: SecretKey
+sign' :: SecretKey Ed25519
       -- ^ Signers secret key
       -> ByteString
       -- ^ Input message
@@ -151,7 +146,7 @@ sign' sk xs =
 
 -- | Verify a message with a detached @'Signature'@, for a given
 -- 'PublicKey'.
-verify' :: PublicKey
+verify' :: PublicKey Ed25519
         -- ^ Signers public key
         -> ByteString
         -- ^ Input message, without signature

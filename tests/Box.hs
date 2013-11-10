@@ -4,6 +4,7 @@ module Box
 import           Data.ByteString          (ByteString)
 
 import           Crypto.Encrypt.Box
+import           Crypto.Key
 import           Crypto.Nonce
 
 import           Test.QuickCheck
@@ -13,7 +14,7 @@ import           Util
 --------------------------------------------------------------------------------
 -- Authenticated secret-key encryption
 
-type KP = (PublicKey, SecretKey)
+type KP = (PublicKey Box, SecretKey Box)
 
 secretboxProp :: (KP -> KP -> Nonce Box -> Bool) -> Property
 secretboxProp k = morallyDubiousIOProperty $ do

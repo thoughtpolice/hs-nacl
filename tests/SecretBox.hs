@@ -5,6 +5,7 @@ import           Control.Monad
 import           Data.ByteString          (ByteString)
 
 import           Crypto.Encrypt.SecretBox
+import           Crypto.Key
 import           Crypto.Nonce
 
 import           Test.QuickCheck
@@ -14,7 +15,7 @@ import           Util
 --------------------------------------------------------------------------------
 -- Authenticated secret-key encryption
 
-secretboxProp :: (Key -> Nonce SecretBox -> Bool) -> Property
+secretboxProp :: (SecretKey SecretBox -> Nonce SecretBox -> Bool) -> Property
 secretboxProp k = morallyDubiousIOProperty $ liftM2 k randomKey randomNonce
 
 roundtrip :: ByteString -> Property

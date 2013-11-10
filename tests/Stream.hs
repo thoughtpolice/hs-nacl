@@ -7,6 +7,7 @@ import           Data.ByteString          (ByteString)
 import qualified Data.ByteString          as S
 
 import           Crypto.Encrypt.Stream
+import           Crypto.Key
 import           Crypto.Nonce
 
 import           Test.QuickCheck
@@ -16,7 +17,7 @@ import           Util
 --------------------------------------------------------------------------------
 -- Streaming encryption
 
-streamProp :: (Key -> Nonce Stream -> Bool) -> Property
+streamProp :: (SecretKey Stream -> Nonce Stream -> Bool) -> Property
 streamProp k = morallyDubiousIOProperty $ liftM2 k randomKey randomNonce
 
 roundtrip :: ByteString -> Property

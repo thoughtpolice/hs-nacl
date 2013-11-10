@@ -98,6 +98,7 @@ library
     Crypto.Hash.BLAKE2
     Crypto.Hash.SHA
     Crypto.HMAC.SHA512
+    Crypto.Key
     Crypto.MAC.Poly1305
     Crypto.MAC.Siphash24
     Crypto.MAC.Siphash48

@@ -1,3 +1,4 @@
+{-# LANGUAGE EmptyDataDecls           #-}
 {-# LANGUAGE ForeignFunctionInterface #-}
 -- |
 -- Module      : Crypto.DH.Curve25519
@@ -28,14 +29,13 @@ module Crypto.DH.Curve25519
          -- $securitymodel
 
          -- * Types
-         PublicKey(..) -- :: *
-       , SecretKey(..) -- :: *
+         Curve25519
 
          -- * Key creation
-       , createKeypair -- :: IO (PublicKey, SecretKey)
+       , createKeypair -- :: IO (PublicKey Curve25519, SecretKey Curve25519)
 
          -- * Computing shared secrets
-       , curve25519    -- :: SecretKey -> PublicKey -> ByteString
+       , curve25519    -- :: SecretKey Curve25519 -> PublicKey Curve25519 -> ByteString
        ) where
 import           Foreign.C.Types
 import           Foreign.ForeignPtr       (withForeignPtr)
@@ -47,6 +47,8 @@ import           Data.ByteString          as S
 import           Data.ByteString.Internal as SI
 import           Data.ByteString.Unsafe   as SU
 import           Data.Word
+
+import           Crypto.Key
 
 -- $setup
 -- >>> import Control.Monad
@@ -91,18 +93,11 @@ import           Data.Word
 
 --------------------------------------------------------------------------------
 
--- | A @'SecretKey'@ created by @'createKeypair'@. Be sure to keep
--- this safe!
-newtype SecretKey = SecretKey { unSecretKey :: ByteString }
-        deriving (Eq, Show, Ord)
-
--- | A @'PublicKey'@ created by @'createKeypair'@.
-newtype PublicKey = PublicKey { unPublicKey :: ByteString }
-        deriving (Eq, Show, Ord)
+data Curve25519
 
 -- | Randomly generate a public and private key for computing a shared
 -- secret.
-createKeypair :: IO (PublicKey, SecretKey)
+createKeypair :: IO (PublicKey Curve25519, SecretKey Curve25519)
 createKeypair = do
   pk <- SI.mallocByteString cryptoDhPUBLICKEYBYTES
   sk <- SI.mallocByteString cryptoDhSECRETKEYBYTES
@@ -125,7 +120,7 @@ createKeypair = do
 -- same shared secret:
 --
 -- prop> prop $ \(p1,s2) (p2,s1) -> curve25519 s1 p1 == curve25519 s2 p2
-curve25519 :: SecretKey -> PublicKey -> ByteString
+curve25519 :: SecretKey Curve25519 -> PublicKey Curve25519 -> ByteString
 curve25519 (SecretKey sk) (PublicKey pk) =
   unsafePerformIO . SU.unsafeUseAsCString sk $ \psk ->
     SU.unsafeUseAsCString pk $ \ppk ->

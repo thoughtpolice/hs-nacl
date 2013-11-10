@@ -3,6 +3,7 @@ module Ed25519
        ( benchmarks -- :: IO [Benchmark]
        ) where
 import           Criterion.Main
+import           Crypto.Key
 import           Crypto.Sign.Ed25519
 
 import           Control.DeepSeq
@@ -10,8 +11,8 @@ import qualified Data.ByteString     as B
 
 import           Util                ()
 
-instance NFData SecretKey
-instance NFData PublicKey
+instance NFData (SecretKey t)
+instance NFData (PublicKey t)
 
 benchmarks :: IO [Benchmark]
 benchmarks = do
@@ -24,5 +25,5 @@ benchmarks = do
          , bench "roundtrip" $ nf (signBench keys) dummy
          ]
 
-signBench :: (PublicKey, SecretKey) -> B.ByteString -> Bool
+signBench :: (PublicKey Ed25519, SecretKey Ed25519) -> B.ByteString -> Bool
 signBench (pk, sk) xs = verify pk (sign sk xs)

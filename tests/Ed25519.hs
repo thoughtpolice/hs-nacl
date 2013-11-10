@@ -6,6 +6,7 @@ import           Control.Monad
 import           Data.ByteString          (ByteString)
 import qualified Data.ByteString          as S
 
+import           Crypto.Key
 import           Crypto.Sign.Ed25519
 
 import           Test.QuickCheck
@@ -15,7 +16,9 @@ import           Util
 --------------------------------------------------------------------------------
 -- Signatures
 
-keypairProp :: ((PublicKey, SecretKey) -> Bool) -> Property
+type KP = (PublicKey Ed25519, SecretKey Ed25519)
+
+keypairProp :: (KP -> Bool) -> Property
 keypairProp k = morallyDubiousIOProperty $ k `liftM` createKeypair
 
 roundtrip :: ByteString -> Property
