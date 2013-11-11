@@ -102,6 +102,7 @@ library
     Crypto.MAC.Poly1305
     Crypto.MAC.Siphash24
     Crypto.MAC.Siphash48
+    Crypto.NaCl
     Crypto.Nonce
     Crypto.Sign.Ed25519
     System.Crypto.Random
