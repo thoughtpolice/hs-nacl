@@ -17,6 +17,9 @@ module Crypto.Nonce
 
          -- * Nonce interface
        , Nonces(..)
+       , randomNonce
+       , incNonce
+       , fromByteString
        , incBS
        ) where
 import           Data.Word
@@ -43,26 +46,28 @@ instance Show (Nonce t) where
 instance Read (Nonce t) where
   readsPrec _ xs = [(Nonce $ readBytes xs, "")]
 
-
 -- | A common interface for different nonces.
 class Nonces t where
   -- | The size of a given @'Nonce'@.
   nonceSize :: t -> Int
 
-  -- | Create a random @'Nonce'@ for the given API.
-  randomNonce :: IO (Nonce t)
-  randomNonce = Nonce `fmap` randombytes l
-    where l = nonceSize (undefined :: t)
+-- | Create a random @'Nonce'@ for the given API.
+randomNonce :: forall t. Nonces t => IO (Nonce t)
+randomNonce = Nonce `fmap` randombytes l
+  where l = nonceSize (undefined :: t)
+{-# INLINE randomNonce #-}
 
-  -- | Increment a @'Nonce'@ by one.
-  incNonce :: Nonce t -> Nonce t
-  incNonce (Nonce n) = Nonce $! incBS n
+-- | Increment a @'Nonce'@ by one.
+incNonce :: forall t. Nonces t => Nonce t -> Nonce t
+incNonce (Nonce n) = Nonce (incBS n)
+{-# INLINE incNonce #-}
 
-  -- | Create a @'Nonce'@ from a @'ByteString'@.
-  fromByteString :: ByteString -> Maybe (Nonce t)
-  fromByteString xs
-    | S.length xs /= nonceSize (undefined :: t) = Nothing
-    | otherwise = Just (Nonce xs)
+-- | Create a @'Nonce'@ from a @'ByteString'@.
+fromByteString :: forall t. Nonces t => ByteString -> Maybe (Nonce t)
+fromByteString xs
+  | S.length xs /= nonceSize (undefined :: t) = Nothing
+  | otherwise = Just (Nonce xs)
+{-# INLINE fromByteString #-}
 
 -- | Utility function that performs an increment operation like
 -- @'incNonce'@, but on @'ByteString'@s
