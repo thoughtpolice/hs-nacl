@@ -1,7 +1,7 @@
 -- |
 -- Module      : Crypto.Key
 -- Copyright   : (c) Austin Seipp 2011-2013
--- License     : MIT
+-- License     : BSD3
 --
 -- Maintainer  : aseipp@pobox.com
 -- Stability   : experimental

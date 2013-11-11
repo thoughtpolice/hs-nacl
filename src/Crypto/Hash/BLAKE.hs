@@ -2,7 +2,7 @@
 -- |
 -- Module      : Crypto.Hash.BLAKE
 -- Copyright   : (c) Austin Seipp 2013
--- License     : MIT
+-- License     : BSD3
 --
 -- Maintainer  : aseipp@pobox.com
 -- Stability   : experimental

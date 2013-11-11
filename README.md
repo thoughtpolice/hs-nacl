@@ -1,9 +1,8 @@
 # Modern Haskell Cryptography
 
 [![Build Status](https://travis-ci.org/thoughtpolice/hs-nacl.png?branch=master)](https://travis-ci.org/thoughtpolice/hs-nacl)
-[![MIT](http://b.repl.ca/v1/license-MIT-blue.png)](http://en.wikipedia.org/wiki/MIT_License)
+[![BSD3](http://b.repl.ca/v1/license-BSD3-blue.png)](http://en.wikipedia.org/wiki/BSD_licenses)
 [![Haskell](http://b.repl.ca/v1/language-haskell-lightgrey.png)](http://www.haskell.org)
-
 
 [NaCl][] (pronounced "salt") is a fast library for cryptographic
 networking. Think of it like OpenSSL, but faster, easier, and more
@@ -45,7 +44,7 @@ See [AUTHORS.txt](https://raw.github.com/thoughtpolice/hs-nacl/master/AUTHORS.tx
 
 # License
 
-MIT. See
+BSD3. See
 [LICENSE.txt](https://raw.github.com/thoughtpolice/hs-nacl/master/LICENSE.txt)
 for terms of copyright and redistribution.
 

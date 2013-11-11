@@ -1,7 +1,7 @@
 name:                nacl
 version:             0.0.0.0
 category:            Cryptography, Networking
-license:             MIT
+license:             BSD3
 synopsis:            Networking and Cryptography library
 homepage:            https://github.com/thoughtpolice/hs-nacl/wiki
 bug-reports:         http://github.com/thoughtpolice/hs-nacl/issues
