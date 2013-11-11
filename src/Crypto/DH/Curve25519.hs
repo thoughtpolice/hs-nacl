@@ -93,6 +93,8 @@ import           Crypto.Key
 
 --------------------------------------------------------------------------------
 
+-- | A phantom type for representing types related to Curve25519 key
+-- exchange.
 data Curve25519
 
 -- | Randomly generate a public and private key for computing a shared

@@ -64,6 +64,7 @@ import           Crypto.Key
 
 --------------------------------------------------------------------------------
 
+-- | A phantom type for representing types related to signing.
 data Ed25519
 
 -- | Randomly generate a public and private key for doing
@@ -87,7 +88,7 @@ createKeypair = do
 
 -- | Sign a message with a particular @'SecretKey'@.
 sign :: SecretKey Ed25519
-     -- ^ Signers secret key
+     -- ^ Signers @'SecretKey'@
      -> ByteString
      -- ^ Input message
      -> ByteString
@@ -107,7 +108,7 @@ sign (SecretKey sk) xs =
 -- >>> verify pk (sign sk xs)
 -- True
 verify :: PublicKey Ed25519
-       -- ^ Signers public key
+       -- ^ Signers @'PublicKey'@
        -> ByteString
        -- ^ Signed message
        -> Bool

@@ -88,7 +88,7 @@ encrypt :: Nonce SecretBox
         -> ByteString
         -- ^ Input
         -> SecretKey SecretBox
-        -- ^ Secret key
+        -- ^ Shared @'SecretKey'@
         -> ByteString
         -- ^ Ciphertext
 encrypt (Nonce n) msg (SecretKey k) = unsafePerformIO $ do
@@ -118,7 +118,7 @@ decrypt :: Nonce SecretBox
         -> ByteString
         -- ^ Input
         -> SecretKey SecretBox
-        -- ^ Secret key
+        -- ^ Shared @'SecretKey'@
         -> Maybe ByteString
         -- ^ Ciphertext
 decrypt (Nonce n) cipher (SecretKey k) = unsafePerformIO $ do

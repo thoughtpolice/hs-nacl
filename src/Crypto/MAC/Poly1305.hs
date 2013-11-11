@@ -62,6 +62,7 @@ import           System.Crypto.Random
 -- under the same key should be expected to reveal enough information
 -- to allow forgeries of authenticators on other messages.
 
+-- | A phantom type for representing types related to Poly-1305 MACs.
 data Poly1305
 
 -- | Generate a random key for performing encryption.

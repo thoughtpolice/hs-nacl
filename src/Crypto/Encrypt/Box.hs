@@ -101,8 +101,8 @@ data Box
 instance Nonces Box where
   nonceSize _ = boxNONCEBYTES
 
--- | The @'createKeypair'@ function randomly generates a secret key and
--- a corresponding public key.
+-- | The @'createKeypair'@ function randomly generates a @'SecretKey'@
+-- and a corresponding @'PublicKey'@.
 createKeypair :: IO (PublicKey Box, SecretKey Box)
 createKeypair = do
   pk <- SI.mallocByteString boxPUBLICKEYBYTES
@@ -128,9 +128,9 @@ encrypt :: Nonce Box
         -> ByteString
         -- ^ Message
         -> PublicKey Box
-        -- ^ Recievers public key
+        -- ^ Recievers @'PublicKey'@
         -> SecretKey Box
-        -- ^ Senders secret key
+        -- ^ Senders @'SecretKey'@
         -> ByteString
         -- ^ Ciphertext
 encrypt (Nonce n) msg (PublicKey pk) (SecretKey sk) = unsafePerformIO $ do
@@ -161,9 +161,9 @@ decrypt :: Nonce Box
         -> ByteString
         -- ^ Input ciphertext
         -> PublicKey Box
-        -- ^ Senders public key
+        -- ^ Senders @'PublicKey'@
         -> SecretKey Box
-        -- ^ Recievers secret key
+        -- ^ Recievers @'SecretKey'@
         -> Maybe ByteString -- ^ Ciphertext
 decrypt (Nonce n) cipher (PublicKey pk) (SecretKey sk) = unsafePerformIO $ do
   let c    = cipher
@@ -214,8 +214,11 @@ newtype NM = NM ByteString deriving (Eq, Show)
 
 -- | Creates an intermediate piece of @'NM'@ data for
 -- sending/receiving messages to/from the same person. The resulting
--- 'NM' can be used for any number of messages between client/server.
-createNM :: PublicKey Box -> SecretKey Box -> NM
+-- @'NM'@ can be used for any number of messages between
+-- client/server.
+createNM :: PublicKey Box -- ^ Sender/receiver @'PublicKey'@
+         -> SecretKey Box -- ^ Sender/receiver @'SecretKey'@
+         -> NM            -- ^ Precomputation box
 createNM (PublicKey pk) (SecretKey sk) = unsafePerformIO $ do
   nm <- SI.mallocByteString boxBEFORENMBYTES
   _ <- withForeignPtr nm $ \pnm ->

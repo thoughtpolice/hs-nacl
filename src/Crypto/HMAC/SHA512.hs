@@ -66,6 +66,8 @@ import           System.Crypto.Random
 -- does not make any promises regarding \"truncated unforgeability.\"
 
 
+-- | A phantom type for representing types related to SHA-512-256
+-- HMACs.
 data HMACSHA512
 
 -- | Generate a random key for performing encryption.
@@ -76,8 +78,8 @@ randomKey = SecretKey `fmap` randombytes hmacsha512256KEYBYTES
 newtype Auth = Auth { unAuth :: ByteString }
   deriving (Eq, Show, Ord)
 
--- | @'authenticate' k m@ authenticates a message @'m'@ using a secret
--- @'Key'@ @k@ and returns the authenticator, @'Auth'@.
+-- | @'authenticate' k m@ authenticates a message @'m'@ using a
+-- @'SecretKey'@ @k@ and returns the authenticator, @'Auth'@.
 authenticate :: SecretKey HMACSHA512
              -- ^ Secret key
              -> ByteString
@@ -92,7 +94,7 @@ authenticate (SecretKey k) msg =
 {-# INLINE authenticate #-}
 
 -- | @'verify' k a m@ verifies @a@ is the correct authenticator of @m@
--- under a secret @'Key'@ @k@.
+-- under a @'SecretKey'@ @k@.
 verify :: SecretKey HMACSHA512
        -- ^ Secret key
        -> Auth

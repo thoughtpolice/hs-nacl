@@ -66,6 +66,8 @@ import           System.Crypto.Random
 -- into another valid authenticator for the same message. NaCl also
 -- does not make any promises regarding \"truncated unforgeability.\"
 
+-- | A phantom type for representing types related to SipHash-2-4
+-- MACs.
 data Siphash24
 
 -- | Generate a random key for performing encryption.
