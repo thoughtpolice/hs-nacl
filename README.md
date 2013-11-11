@@ -1,4 +1,4 @@
-# Fast cryptographic networking for Haskell
+# Modern Haskell Cryptography
 
 [![Build Status](https://travis-ci.org/thoughtpolice/hs-nacl.png?branch=master)](https://travis-ci.org/thoughtpolice/hs-nacl)
 [![MIT](http://b.repl.ca/v1/license-MIT-blue.png)](http://en.wikipedia.org/wiki/MIT_License)
