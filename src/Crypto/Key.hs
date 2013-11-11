@@ -7,7 +7,7 @@
 -- Stability   : experimental
 -- Portability : GHC (ScopedTypeVariables)
 --
--- The Networking and Cryptography library.
+-- Minimal cryptographic key API.
 --
 module Crypto.Key
        ( SecretKey(..) -- :: *
