@@ -30,8 +30,9 @@ description:
   curve25519 interface, and windows support.
   .
   Note that this version of nacl is is patched to include an
-  implementation of Ed25519 for the signature API. This signing system
-  will be the default in future NaCl versions.
+  implementation of ed25519 for the signature API. This signing system
+  will be the default in future NaCl versions; see here for more info:
+  <http://ed25519.cr.yp.to/>
   .
   See more details including documentation, examples, test coverage
   reports, and benchmarks, here:
