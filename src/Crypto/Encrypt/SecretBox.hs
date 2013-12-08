@@ -72,11 +72,11 @@ import           System.Crypto.Random
 data SecretBox
 
 instance Nonces SecretBox where
-  nonceSize _ = xsalsa20poly1305NONCEBYTES
+  nonceSize _ = nonceBYTES
 
 -- | Generate a random key for performing encryption.
 randomKey :: IO (SecretKey SecretBox)
-randomKey = SecretKey `fmap` randombytes xsalsa20poly1305KEYBYTES
+randomKey = SecretKey `fmap` randombytes keyBYTES
 
 -- | The @'encrypt'@ function encrypts and authenticates a message @m@
 -- using a secret @'SecretKey'@ @k@, and a @'Nonce'@ @n@.
@@ -93,10 +93,9 @@ encrypt :: Nonce SecretBox
         -- ^ Ciphertext
 encrypt (Nonce n) msg (SecretKey k) = unsafePerformIO $ do
   -- inputs to crypto_box must be padded
-  let m    = S.replicate xsalsa20poly1305ZEROBYTES 0x0 `S.append` msg
+  let m    = S.replicate zeroBYTES 0x0 `S.append` msg
       mlen = S.length m
-      clen = S.length msg + xsalsa20poly1305BOXZEROBYTES
-  c <- SI.mallocByteString clen
+  c <- SI.mallocByteString mlen
 
   -- as you can tell, this is unsafe
   _ <- withForeignPtr c $ \pc ->
@@ -104,7 +103,7 @@ encrypt (Nonce n) msg (SecretKey k) = unsafePerformIO $ do
       SU.unsafeUseAsCString n $ \pn ->
         SU.unsafeUseAsCString k $ \pk ->
           c_crypto_secretbox pc pm (fromIntegral mlen) pn pk
-  return $! SI.fromForeignPtr c 0 clen
+  return $! SI.fromForeignPtr c boxZEROBYTES (mlen - boxZEROBYTES)
 {-# INLINE encrypt #-}
 
 -- | The @'decrypt'@ function verifies and decrypts a ciphertext @c@
@@ -122,35 +121,31 @@ decrypt :: Nonce SecretBox
         -> Maybe ByteString
         -- ^ Ciphertext
 decrypt (Nonce n) cipher (SecretKey k) = unsafePerformIO $ do
-  let c    = cipher
+  let c    = S.replicate boxZEROBYTES 0x0 `S.append` cipher
       clen = S.length c
-      mlen = (clen - xsalsa20poly1305BOXZEROBYTES)
-           + xsalsa20poly1305ZEROBYTES
-  m <- SI.mallocByteString mlen
+  m <- SI.mallocByteString clen
 
   -- as you can tell, this is unsafe
   r <- withForeignPtr m $ \pm ->
     SU.unsafeUseAsCString c $ \pc ->
       SU.unsafeUseAsCString n $ \pn ->
         SU.unsafeUseAsCString k $ \pk ->
-          c_crypto_secretbox_open pm pc (fromIntegral mlen) pn pk
+          c_crypto_secretbox_open pm pc (fromIntegral clen) pn pk
 
   return $! if r /= 0 then Nothing
-            else
-              let bs = SI.fromForeignPtr m 0 mlen
-              in Just $ SU.unsafeDrop xsalsa20poly1305ZEROBYTES bs
+            else Just $ SI.fromForeignPtr m zeroBYTES (clen - zeroBYTES)
 
-xsalsa20poly1305KEYBYTES :: Int
-xsalsa20poly1305KEYBYTES = 32
+keyBYTES :: Int
+keyBYTES = 32
 
-xsalsa20poly1305NONCEBYTES :: Int
-xsalsa20poly1305NONCEBYTES = 24
+nonceBYTES :: Int
+nonceBYTES = 24
 
-xsalsa20poly1305ZEROBYTES :: Int
-xsalsa20poly1305ZEROBYTES = 32
+zeroBYTES :: Int
+zeroBYTES = 32
 
-xsalsa20poly1305BOXZEROBYTES :: Int
-xsalsa20poly1305BOXZEROBYTES = 16
+boxZEROBYTES :: Int
+boxZEROBYTES = 16
 
 foreign import ccall unsafe "xsalsa20poly1305_secretbox"
   c_crypto_secretbox :: Ptr Word8 -> Ptr CChar -> CULLong ->

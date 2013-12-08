@@ -135,10 +135,9 @@ encrypt :: Nonce Box
         -- ^ Ciphertext
 encrypt (Nonce n) msg (PublicKey pk) (SecretKey sk) = unsafePerformIO $ do
   -- inputs to crypto_box must be padded
-  let m    = S.replicate boxZEROBYTES 0x0 `S.append` msg
+  let m    = S.replicate zeroBYTES 0x0 `S.append` msg
       mlen = S.length m
-      clen = S.length msg + boxBOXZEROBYTES
-  c <- SI.mallocByteString clen
+  c <- SI.mallocByteString mlen
 
   -- as you can tell, this is unsafe
   _ <- withForeignPtr c $ \pc ->
@@ -147,7 +146,7 @@ encrypt (Nonce n) msg (PublicKey pk) (SecretKey sk) = unsafePerformIO $ do
         SU.unsafeUseAsCString pk $ \ppk ->
           SU.unsafeUseAsCString sk $ \psk ->
             c_crypto_box pc pm (fromIntegral mlen) pn ppk psk
-  return $! SI.fromForeignPtr c 0 clen
+  return $! SI.fromForeignPtr c boxZEROBYTES (mlen - boxZEROBYTES)
 {-# INLINE encrypt #-}
 
 -- | The @'decrypt'@ function verifies and decrypts a ciphertext @c@
@@ -166,10 +165,9 @@ decrypt :: Nonce Box
         -- ^ Recievers @'SecretKey'@
         -> Maybe ByteString -- ^ Ciphertext
 decrypt (Nonce n) cipher (PublicKey pk) (SecretKey sk) = unsafePerformIO $ do
-  let c    = cipher
+  let c    = S.replicate boxZEROBYTES 0x0 `S.append` cipher
       clen = S.length c
-      mlen = (clen - boxBOXZEROBYTES) + boxZEROBYTES
-  m <- SI.mallocByteString mlen
+  m <- SI.mallocByteString clen
 
   -- as you can tell, this is unsafe
   r <- withForeignPtr m $ \pm ->
@@ -177,11 +175,9 @@ decrypt (Nonce n) cipher (PublicKey pk) (SecretKey sk) = unsafePerformIO $ do
       SU.unsafeUseAsCString n $ \pn ->
         SU.unsafeUseAsCString pk $ \ppk ->
           SU.unsafeUseAsCString sk $ \psk ->
-            c_crypto_box_open pm pc (fromIntegral mlen) pn ppk psk
+            c_crypto_box_open pm pc (fromIntegral clen) pn ppk psk
   return $! if r /= 0 then Nothing
-            else
-              let bs = SI.fromForeignPtr m 0 mlen
-              in Just $ SU.unsafeDrop boxZEROBYTES bs
+            else Just $ SI.fromForeignPtr m zeroBYTES (clen - zeroBYTES)
 {-# INLINE decrypt #-}
 
 -- $precomp
@@ -233,10 +229,9 @@ createNM (PublicKey pk) (SecretKey sk) = unsafePerformIO $ do
 encryptNM :: NM -> Nonce Box -> ByteString -> ByteString
 encryptNM (NM nm) (Nonce n) msg = unsafePerformIO $ do
   -- inputs to crypto_box must be padded
-  let m    = S.replicate boxZEROBYTES 0x0 `S.append` msg
+  let m    = S.replicate zeroBYTES 0x0 `S.append` msg
       mlen = S.length m
-      clen = S.length msg + boxBOXZEROBYTES
-  c <- SI.mallocByteString clen
+  c <- SI.mallocByteString mlen
 
   -- as you can tell, this is unsafe
   _ <- withForeignPtr c $ \pc ->
@@ -244,28 +239,25 @@ encryptNM (NM nm) (Nonce n) msg = unsafePerformIO $ do
       SU.unsafeUseAsCString n $ \pn ->
         SU.unsafeUseAsCString nm $ \pnm ->
           c_crypto_box_afternm pc pm (fromIntegral mlen) pn pnm
-  return $! SI.fromForeignPtr c 0 clen
+  return $! SI.fromForeignPtr c boxZEROBYTES (mlen - boxZEROBYTES)
 {-# INLINE encryptNM #-}
 
 -- | Decrypt data from a specific sender for a specific receiver with
 -- some precomputed @'NM'@ data.
 decryptNM :: NM -> Nonce Box -> ByteString -> Maybe ByteString
 decryptNM (NM nm) (Nonce n) cipher = unsafePerformIO $ do
-  let c    = cipher
+  let c    = S.replicate boxZEROBYTES 0x0 `S.append` cipher
       clen = S.length c
-      mlen = (clen - boxBOXZEROBYTES) + boxZEROBYTES
-  m <- SI.mallocByteString mlen
+  m <- SI.mallocByteString clen
 
   -- as you can tell, this is unsafe
   r <- withForeignPtr m $ \pm ->
     SU.unsafeUseAsCString c $ \pc ->
       SU.unsafeUseAsCString n $ \pn ->
         SU.unsafeUseAsCString nm $ \pnm ->
-          c_crypto_box_open_afternm pm pc (fromIntegral mlen) pn pnm
+          c_crypto_box_open_afternm pm pc (fromIntegral clen) pn pnm
   return $! if r /= 0 then Nothing
-            else
-              let bs = SI.fromForeignPtr m 0 mlen
-              in Just $ SU.unsafeDrop boxZEROBYTES bs
+            else Just $ SI.fromForeignPtr m zeroBYTES (clen - zeroBYTES)
 {-# INLINE decryptNM #-}
 
 --
@@ -281,11 +273,11 @@ boxSECRETKEYBYTES = 32
 boxNONCEBYTES :: Int
 boxNONCEBYTES = 24
 
-boxZEROBYTES :: Int
-boxZEROBYTES = 32
+zeroBYTES :: Int
+zeroBYTES = 32
 
-boxBOXZEROBYTES :: Int
-boxBOXZEROBYTES = 16
+boxZEROBYTES :: Int
+boxZEROBYTES = 16
 
 boxBEFORENMBYTES :: Int
 boxBEFORENMBYTES = 32
