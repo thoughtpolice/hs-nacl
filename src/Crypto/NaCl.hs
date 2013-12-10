@@ -66,9 +66,23 @@ module Crypto.NaCl
          -- * Extra utilities
          -- ** Secure password-based file encryption
 
-         -- ** Secure password storage
+         -- ** Secure password storage: @'Password.encryptPass'@
+         -- $password-storage
+         -- *** Types
+       , Password.EncryptedPass(..)
+       , Password.Pass(..)
+         -- *** Parameters
+         -- $params
+       , Password.ScryptParams
+       , Password.defaultParams
+       , Password.scryptParams
+         -- *** Encryption/verification
+       , Password.encryptPass
+       , Password.encryptPass'
+       , Password.verifyPass
+       , Password.verifyPass'
 
-         -- ** Key-stretching: ...
+         -- ** Key-stretching: @'deriveKey'@
        , KDF.Salt(..)
        , KDF.newSalt
        , deriveKey
@@ -88,6 +102,7 @@ import qualified Crypto.HMAC.SHA512       as HMACSHA512
 import qualified Crypto.MAC.Poly1305      as Poly1305
 import qualified Crypto.Sign.Ed25519      as Ed25519
 import qualified Crypto.KDF.Scrypt        as KDF
+import qualified Crypto.Password.Scrypt   as Password
 
 import           Crypto.Key
 import           Crypto.Nonce             as Nonce
@@ -306,7 +321,6 @@ authVerify = HMACSHA512.verify
 --------------------------------------------------------------------------------
 -- One-time authentication
 
-
 -- | @'oneTimeAuth' k m@ authenticates a message @'m'@ using a secret
 -- @'SecretKey'@ @k@ and returns the authenticator, @'Poly1305.Auth'@.
 oneTimeAuth :: SecretKey Poly1305.Poly1305
@@ -336,12 +350,55 @@ hash = SHA.sha512
 -- TODO: file encryption
 
 --------------------------------------------------------------------------------
--- TODO: Re-export password encryption/validation
+-- Password storage
+
+-- $password-storage
+--
+-- To allow storing encrypted passwords conveniently in a single database
+-- column, the password storage API provides the data type 'EncryptedPass'. It
+-- combines a 'Pass' as well as the 'Salt' and 'ScryptParams' used to compute
+-- it into a single 'ByteString', separated by pipe (\"|\") characters. The
+-- 'Salt' and 'PassHash' are base64-encoded. Storing the 'ScryptParams' with
+-- the password allows to gradually strengthen password encryption in case of
+-- changing security requirements.
+--
+-- A usage example is given below, showing encryption, verification and
+-- changing 'ScryptParams':
+--
+-- > >>> encrypted <- encryptPass defaultParams (Pass "secret")
+-- > >>> print encrypted
+-- > EncryptedPass {unEncryptedPass = "14|8|1|Wn5x[SNIP]nM=|Zl+p[SNIP]g=="}
+-- > >>> print $ verifyPass defaultParams (Pass "secret") encrypted
+-- > (True,Nothing)
+-- > >>> print $ verifyPass defaultParams (Pass "wrong") encrypted
+-- > (False,Nothing)
+-- > >>> let newParams = fromJust $ scryptParams 16 8 1
+-- > >>> print $ verifyPass newParams (Pass "secret") encrypted
+-- > (True,Just (EncryptedPass {unEncryptedPass = "16|8|1|Wn5x[SNIP]nM=|ZmWw[SNIP]Q=="}))
+--
+
+-- $params
+--
+-- Scrypt takes three tuning parameters: @N@, @r@ and @p@. They affect running
+-- time and memory usage:
+--
+-- /Memory usage/ is approximately @128*r*N@ bytes. Note that the
+-- 'scryptParams' function takes @log_2(N)@ as a parameter. As an example,
+-- the 'defaultParams'
+--
+-- >   log_2(N) = 14, r = 8 and p = 1
+--
+-- lead to 'scrypt' using @128 * 8 * 2^14 = 16M@ bytes of memory.
+--
+-- /Running time/ is proportional to all of @N@, @r@ and @p@. Since it's
+-- influence on memory usage is small, @p@ can be used to independently tune
+-- the running time.
 
 --------------------------------------------------------------------------------
 -- Key stretching
 
--- | Derive a strong key from a given @'ByteString'@. This can be used to derive a secure encryption key from a password, for example.
+-- | Derive a strong key from a given @'ByteString'@. This can be used
+-- to derive a secure encryption key from a password, for example.
 --
 -- The @'Salt'@ may be generated with @'KDF.newSalt'@, and may be
 -- stored along with the encrypted buffer. When you need to decrypt
