@@ -1,3 +1,4 @@
+/src/cbits/scryptenc-jane/.git
 /.cabal-sandbox/
 /dist/
 /bench/*.html

@@ -2,7 +2,7 @@ name:                nacl
 version:             0.0.0.0
 category:            Cryptography, Networking
 license:             BSD3
-synopsis:            Networking and Cryptography library
+synopsis:            Modern Haskell Cryptography
 homepage:            https://github.com/thoughtpolice/hs-nacl/wiki
 bug-reports:         http://github.com/thoughtpolice/hs-nacl/issues
 license-file:        LICENSE.txt
@@ -22,12 +22,13 @@ description:
   lead by Dan J. Bernstein and Tanja Lange. It's designed to be
   considerably faster and easier to use (e.g. simple APIs, good
   selection of default primitives) than alternative crypto libraries
-  like OpenSSL.
+  like OpenSSL. See <http://nacl.cace-project.eu> for more.
   .
   This package provides a high level interface to NaCl and all its
   basic APIs. It also includes some extra primitives for certain
-  operations including siphash, BLAKE and BLAKE2, ed25519, a full
-  curve25519 interface, and windows support.
+  operations including siphash, BLAKE and BLAKE2, ed25519, and a full
+  curve25519 interface. In addition, it includes windows support, and
+  scrypt based file-encryption, key derivation and password storage.
   .
   Note that this version of nacl is is patched to include an
   implementation of ed25519 for the signature API. This signing system
@@ -52,6 +53,8 @@ extra-source-files:
   src/cbits/ed25519/*.c src/cbits/ed25519/*.h
   src/cbits/hmac-sha512256/*.c src/cbits/hmac-sha512256/*.h
   src/cbits/poly1305/*.c src/cbits/poly1305/*.h
+  src/cbits/scryptenc-jane/*.c src/cbits/scryptenc-jane/*.h
+  src/cbits/scryptenc-jane/code/*.h
   src/cbits/sha/*.c src/cbits/sha/*.h
   src/cbits/siphash2448/*.c src/cbits/siphash2448/*.h
   src/cbits/xsalsa20/*.c src/cbits/xsalsa20/*.h
@@ -87,8 +90,10 @@ library
   hs-source-dirs:     src
 
   build-depends:
-    base >= 4 && < 5,
-    bytestring >= 0.9 && < 0.11
+    base              >= 4   && < 5,
+    bytestring        >= 0.9 && < 0.11,
+    base64-bytestring >= 1.0 && < 1.1,
+    filepath          >= 1.0 && < 2.0
 
   exposed-modules:
     Crypto.DH.Curve25519
@@ -99,16 +104,20 @@ library
     Crypto.Hash.BLAKE2
     Crypto.Hash.SHA
     Crypto.HMAC.SHA512
+    Crypto.KDF.Scrypt
     Crypto.Key
     Crypto.MAC.Poly1305
     Crypto.MAC.Siphash24
     Crypto.MAC.Siphash48
     Crypto.NaCl
     Crypto.Nonce
+    Crypto.Password.Scrypt
     Crypto.Sign.Ed25519
     System.Crypto.Random
+  other-modules:
+    Crypto.Internal.Scrypt
 
-  cc-options:   -std=c99
+  cc-options:   -march=native -std=gnu99 -DSCRYPT_CHACHA -DSCRYPT_BLAKE512
   include-dirs: src/cbits/util
   c-sources:
     src/cbits/util/randombytes.c src/cbits/util/nonce.c
@@ -120,6 +129,7 @@ library
     src/cbits/ed25519/ed25519.c
     src/cbits/hmac-sha512256/hmac-sha512256.c
     src/cbits/poly1305/poly1305.c
+    src/cbits/scryptenc-jane/scrypt-jane.c
     src/cbits/sha/sha256.c src/cbits/sha/sha512.c
     src/cbits/siphash2448/siphash2448.c
     src/cbits/xsalsa20/xsalsa20.c

@@ -14,53 +14,64 @@
 --
 -- > import qualified Crypto.NaCl as NaCl
 module Crypto.NaCl
-       ( -- * Public-key cryptograpy
-         -- ** Authenticated encryption: @'box'@
+       ( -- * NaCl API
+         -- ** Public-key cryptograpy
+         -- *** Authenticated encryption: @'box'@
          Box.Box
        , box
        , boxOpen
-         -- *** Precomputation interface
+         -- **** Precomputation interface
        , boxBeforeNM
        , boxAfterNM
        , boxOpenAfterNM
 
-         -- ** Diffie-hellman: @'curve25519'@
+         -- *** Diffie-hellman: @'curve25519'@
        , Curve25519.Curve25519
        , curve25519
 
-         -- ** Signatures: @'sign'@
+         -- *** Signatures: @'sign'@
        , Ed25519.Ed25519
        , sign
        , verify
 
-         -- * Secret-key cryptography
-         -- ** Authenticated encryption: @'secretBox'@
+         -- ** Secret-key cryptography
+         -- *** Authenticated encryption: @'secretBox'@
        , SecretBox.SecretBox
        , secretBox
        , secretBoxOpen
 
-         -- ** Encryption: @'stream'@
+         -- *** Encryption: @'stream'@
        , Stream.Stream
        , stream
        , streamEncrypt
        , streamDecrypt
 
-         -- ** Authentication: @'auth'@
+         -- *** Authentication: @'auth'@
        , HMACSHA512.HMACSHA512
        , auth
        , authVerify
 
-         -- ** One-time authentication: @'oneTimeAuth'@
+         -- *** One-time authentication: @'oneTimeAuth'@
        , Poly1305.Poly1305
        , oneTimeAuth
        , oneTimeAuthVerify
 
-         -- * Secure randomness
+         -- ** Secure randomness: @'randombytes'@
        , Random.randombytes
 
-         -- * Low-level functions
-         -- ** Hashing: @'hash'@
+         -- ** Low-level functions
+         -- *** Hashing: @'hash'@
        , hash    -- :: ByteString -> ByteString
+
+         -- * Extra utilities
+         -- ** Secure password-based file encryption
+
+         -- ** Secure password storage
+
+         -- ** Key-stretching: ...
+       , KDF.Salt(..)
+       , KDF.newSalt
+       , deriveKey
 
          -- * Keys
        , PublicKey(..) -- :: *
@@ -76,6 +87,7 @@ import qualified Crypto.Hash.SHA          as SHA
 import qualified Crypto.HMAC.SHA512       as HMACSHA512
 import qualified Crypto.MAC.Poly1305      as Poly1305
 import qualified Crypto.Sign.Ed25519      as Ed25519
+import qualified Crypto.KDF.Scrypt        as KDF
 
 import           Crypto.Key
 import           Crypto.Nonce             as Nonce
@@ -319,3 +331,25 @@ oneTimeAuthVerify = Poly1305.verify
 hash :: ByteString -> ByteString
 hash = SHA.sha512
 {-# INLINE hash #-}
+
+--------------------------------------------------------------------------------
+-- TODO: file encryption
+
+--------------------------------------------------------------------------------
+-- TODO: Re-export password encryption/validation
+
+--------------------------------------------------------------------------------
+-- Key stretching
+
+-- | Derive a strong key from a given @'ByteString'@. This can be used to derive a secure encryption key from a password, for example.
+--
+-- The @'Salt'@ may be generated with @'KDF.newSalt'@, and may be
+-- stored along with the encrypted buffer. When you need to decrypt
+-- it, simply derive the same key from the users password using the
+-- salt, and attempt to decrypt.
+deriveKey :: Integer    -- ^ Size of resulting @'ByteString'@
+          -> KDF.Salt   -- ^ A @'KDF.Salt'@
+          -> ByteString -- ^ Input
+          -> ByteString -- ^ Resulting key
+deriveKey n salt inp = KDF.stretch' n salt inp
+{-# INLINE deriveKey #-}

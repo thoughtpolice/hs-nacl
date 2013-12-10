@@ -10,8 +10,8 @@
 -- Minimal cryptographic key API.
 --
 module Crypto.Key
-       ( SecretKey(..) -- :: *
-       , PublicKey(..) -- :: *
+       ( SecretKey(..)        -- :: *
+       , PublicKey(..)        -- :: *
        ) where
 import           Data.ByteString (ByteString)
 import qualified Data.ByteString as B
