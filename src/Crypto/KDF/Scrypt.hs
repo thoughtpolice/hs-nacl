@@ -77,6 +77,9 @@ stretch :: ScryptParams -- ^ Scrypt parameters
         -> ByteString   -- ^ Resulting key.
 stretch p n salt key = getHash (scrypt (p { bufLen = n }) salt (Pass key))
 
--- | Equivalent to @stretch defaultPArams@
-stretch' :: Integer -> Salt -> ByteString -> ByteString
+-- | Equivalent to @'stretch' 'defaultParams' n salt key@
+stretch' :: Integer      -- ^ Length of resulting buffer.
+         -> Salt         -- ^ The salt to use.
+         -> ByteString   -- ^ Input buffer.
+         -> ByteString   -- ^ Resulting key.
 stretch' n salt key = stretch defaultParams n salt key
