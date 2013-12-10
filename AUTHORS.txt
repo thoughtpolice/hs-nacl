@@ -2,11 +2,18 @@ Author, target of blame:
 
   Austin Seipp <aseipp [@at] pobox [.dot] com>
 
-Friends who contributed discussion/ideas/patches in no particular
-order:
+This code is derived from the work of several other people, including:
 
-Daniel Peebles
-Michael Stone
-Johan Brinch
-Joseph Abrahamson
-Shachaf Ben-Kiki
+  - Dan J. Bernstein & Tanja Lange (nacl/SUPERCOP code)
+  - Jean-Philippe Aumasson (BLAKE/BLAKE2, siphash, nacl/SUPERCOP code)
+  - Falko Peters (haskell scrypt binding)
+  - Andrew M. & Colin Percival (scrypt-jane)
+
+I also appreciate several friends who contributed
+discussion/ideas/patches in no particular order:
+
+  - Daniel Peebles
+  - Michael Stone
+  - Johan Brinch
+  - Joseph Abrahamson
+  - Shachaf Ben-Kiki
