@@ -22,6 +22,17 @@
 --
 -- > import qualified Crypto.Encrypt.Box as Box
 --
+-- There are two basic interfaces: a simple encryption/decryption
+-- interface, and a 'precomputation interface' for
+-- encryption/decryption. If you're going to send lots of messages to
+-- the same receiver, you are /highly/ encouraged to use the
+-- precomputation interface. In particular, the basic @'encrypt'@ and
+-- @'decrypt'@ functions perform Diffie-Hellman key-exchange upon
+-- every invocation, which is very computationally expensive relative
+-- to the encryption. Instead, use the precomputation interface, which
+-- will compute the shared secret only once and share it amongst
+-- future calls.
+--
 module Crypto.Encrypt.Box
        ( -- * Security model
          -- $securitymodel
@@ -120,9 +131,6 @@ createKeypair = do
 -- | The @'encrypt'@ function encrypts and authenticates a message @m@
 -- using a sender's @'SecretKey'@ @sk@, the receiver's @'PublicKey'@
 -- @pk@, and a @'Nonce'@ @n@.
---
--- This function produces ciphertext compatible with the NaCl
--- @crypto_box@ function.
 encrypt :: Nonce Box
         -- ^ Nonce
         -> ByteString
@@ -152,9 +160,6 @@ encrypt (Nonce n) msg (PublicKey pk) (SecretKey sk) = unsafePerformIO $ do
 -- | The @'decrypt'@ function verifies and decrypts a ciphertext @c@
 -- using the receiver's @'SecretKey'@ @sk@, the sender's @'PublicKey'@
 -- @pk@ and a @'Nonce'@ @n@.
---
--- Like @'encrypt'@, @'decrypt'@ takes ciphertext that is compatible
--- with the NaCl C @crypto_box@ and @crypto_boxopen@ functions.
 decrypt :: Nonce Box
         -- ^ Nonce
         -> ByteString
@@ -209,9 +214,9 @@ decrypt (Nonce n) cipher (PublicKey pk) (SecretKey sk) = unsafePerformIO $ do
 newtype NM = NM ByteString deriving (Eq, Show)
 
 -- | Creates an intermediate piece of @'NM'@ data for
--- sending/receiving messages to/from the same person. The resulting
+-- sending\/receiving messages to\/from the same person. The resulting
 -- @'NM'@ can be used for any number of messages between
--- client/server.
+-- sender/receiver.
 createNM :: PublicKey Box -- ^ Sender/receiver @'PublicKey'@
          -> SecretKey Box -- ^ Sender/receiver @'SecretKey'@
          -> NM            -- ^ Precomputation box

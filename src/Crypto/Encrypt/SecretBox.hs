@@ -80,9 +80,6 @@ randomKey = SecretKey `fmap` randombytes keyBYTES
 
 -- | The @'encrypt'@ function encrypts and authenticates a message @m@
 -- using a secret @'SecretKey'@ @k@, and a @'Nonce'@ @n@.
---
--- This function produces ciphertext compatible with the NaCl
--- @crypto_secretbox@ function.
 encrypt :: Nonce SecretBox
         -- ^ Nonce
         -> ByteString
@@ -108,10 +105,6 @@ encrypt (Nonce n) msg (SecretKey k) = unsafePerformIO $ do
 
 -- | The @'decrypt'@ function verifies and decrypts a ciphertext @c@
 -- using a secret @'Key'@ @k@, and a @'Nonce'@ @n@.
---
--- Like @'encrypt'@, @'decrypt'@ takes ciphertext that is compatible
--- with the NaCl C @crypto_secretbox@ and @crypto_secretbox_open@
--- functions.
 decrypt :: Nonce SecretBox
         -- ^ Nonce
         -> ByteString

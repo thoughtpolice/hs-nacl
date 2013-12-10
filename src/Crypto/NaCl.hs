@@ -17,10 +17,13 @@ module Crypto.NaCl
        ( -- * NaCl API
          -- ** Public-key cryptograpy
          -- *** Authenticated encryption: @'box'@
+         -- $precomp-note
          Box.Box
        , box
        , boxOpen
          -- **** Precomputation interface
+         -- $precomp
+       , Box.NM
        , boxBeforeNM
        , boxAfterNM
        , boxOpenAfterNM
@@ -111,12 +114,22 @@ import           System.Crypto.Random     as Random
 --------------------------------------------------------------------------------
 -- Public-key authenticated encryption
 
+{- $precomp-note
+
+There are two basic interfaces: a simple encryption/decryption
+interface, and a 'precomputation interface' for
+encryption/decryption. If you're going to send lots of messages to the
+same receiver, you are /highly/ encouraged to use the precomputation
+interface. In particular, the basic @'box'@ and @'boxOpen'@
+functions perform Diffie-Hellman key-exchange upon every invocation,
+which is very computationally expensive relative to the
+encryption. Instead, use the precomputation interface, which will
+compute the shared secret only once and share it amongst future calls.
+-}
+
 -- | The @'box'@ function encrypts and authenticates a message @m@
 -- using a sender's @'SecretKey'@ @sk@, the receiver's @'PublicKey'@
 -- @pk@, and a @'Nonce'@ @n@.
---
--- This function produces ciphertext compatible with the NaCl
--- @crypto_box@ function.
 box :: Nonce Box.Box
     -- ^ Nonce
     -> ByteString
@@ -133,9 +146,6 @@ box = Box.encrypt
 -- | The @'boxOpen'@ function verifies and decrypts a ciphertext @c@
 -- using the receiver's @'SecretKey'@ @sk@, the sender's @'PublicKey'@
 -- @pk@ and a @'Nonce'@ @n@.
---
--- Like @'box'@, @'boxOpen'@ takes ciphertext that is compatible with
--- the NaCl C @crypto_box@ and @crypto_boxopen@ functions.
 boxOpen :: Nonce Box.Box
         -- ^ Nonce
         -> ByteString
@@ -148,10 +158,25 @@ boxOpen :: Nonce Box.Box
 boxOpen = Box.decrypt
 {-# INLINE boxOpen #-}
 
+-- $precomp
+--
+-- If you send many messages to the same receiver, or receive many
+-- messages from the same sender, you can gain speed increases by
+-- instead using the following precomputation interface, which splits
+-- the encryption and decryption steps into two parts.
+--
+-- For encryption, you first create an @'Box.NM'@ by using
+-- @'boxBeforeNM'@, using the senders @'SecretKey'@, and receivers
+-- @'PublicKey'@. You can then use @'boxAfterNM'@ to encrypt data.
+--
+-- For decryption, you first create an @'Box.NM'@ by using
+-- @'boxBeforeNM'@, using the recievers @'SecretKey'@, and the senders
+-- @'PublicKey'@. You can then use @'boxOpenAfterNM'@ to decrypt data.
+
 -- | Creates an intermediate piece of @'Box.NM'@ data for
--- sending/receiving messages to/from the same person. The resulting
+-- sending\/receiving messages to\/from the same person. The resulting
 -- @'Box.NM'@ can be used for any number of messages between
--- client/server.
+-- the sender/receiver.
 boxBeforeNM :: PublicKey Box.Box -- ^ Sender/receiver @'PublicKey'@
             -> SecretKey Box.Box -- ^ Sender/receiver @'SecretKey'@
             -> Box.NM            -- ^ Precomputation box
