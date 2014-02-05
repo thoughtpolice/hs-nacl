@@ -116,7 +116,7 @@ scrypt Params{..} (Salt salt) (Pass pass) =
                 bufPtr (fromIntegral bufLen)
             B.packCStringLen (castPtr bufPtr, fromIntegral bufLen)
 
-foreign import ccall unsafe "scrypt" crypto_scrypt
+foreign import ccall unsafe "crypto_scrypt" crypto_scrypt
     :: Ptr Word8 -> CSize         -- password
     -> Ptr Word8 -> CSize         -- salt
     -> Word64 -> Word32 -> Word32 -- N, r, p

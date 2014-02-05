@@ -55,6 +55,7 @@ extra-source-files:
   src/cbits/poly1305/*.c src/cbits/poly1305/*.h
   src/cbits/scryptenc-jane/*.c src/cbits/scryptenc-jane/*.h
   src/cbits/scryptenc-jane/code/*.h
+  src/cbits/scrypt/*.c src/cbits/scrypt/*.h
   src/cbits/sha/*.c src/cbits/sha/*.h
   src/cbits/siphash2448/*.c src/cbits/siphash2448/*.h
   src/cbits/xsalsa20/*.c src/cbits/xsalsa20/*.h
@@ -117,7 +118,7 @@ library
   other-modules:
     Crypto.Internal.Scrypt
 
-  cc-options:   -march=native -std=gnu99 -DSCRYPT_CHACHA -DSCRYPT_BLAKE512
+  cc-options:   -march=native -std=gnu99
   include-dirs: src/cbits/util
   c-sources:
     src/cbits/util/randombytes.c src/cbits/util/nonce.c
@@ -129,7 +130,7 @@ library
     src/cbits/ed25519/ed25519.c
     src/cbits/hmac-sha512256/hmac-sha512256.c
     src/cbits/poly1305/poly1305.c
-    src/cbits/scryptenc-jane/scrypt-jane.c
+    src/cbits/scrypt/sha256.c src/cbits/scrypt/crypto_scrypt-sse.c
     src/cbits/sha/sha256.c src/cbits/sha/sha512.c
     src/cbits/siphash2448/siphash2448.c
     src/cbits/xsalsa20/xsalsa20.c
