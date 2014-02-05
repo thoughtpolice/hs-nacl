@@ -1,4 +1,3 @@
-{-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE NamedFieldPuns           #-}
 {-# LANGUAGE RecordWildCards          #-}
 -- |

@@ -433,5 +433,5 @@ deriveKey :: Integer    -- ^ Size of resulting @'ByteString'@
           -> KDF.Salt   -- ^ A @'KDF.Salt'@
           -> ByteString -- ^ Input
           -> ByteString -- ^ Resulting key
-deriveKey n salt inp = KDF.stretch' n salt inp
+deriveKey = KDF.stretch'
 {-# INLINE deriveKey #-}

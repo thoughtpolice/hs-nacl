@@ -1,7 +1,5 @@
-{-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE NamedFieldPuns           #-}
 {-# LANGUAGE OverloadedStrings        #-}
-{-# LANGUAGE RecordWildCards          #-}
 -- |
 -- Module      : Crypto.Password.Scrypt
 -- Copyright   : (c) Copyright 2011-2013 Falko Peters, Austin Seipp 2013

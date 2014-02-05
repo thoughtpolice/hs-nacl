@@ -1,6 +1,4 @@
-{-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE NamedFieldPuns           #-}
-{-# LANGUAGE RecordWildCards          #-}
 -- |
 -- Module      : Crypto.KDF.Scrypt
 -- Copyright   : (c) Copyright 2011-2013 Falko Peters, Austin Seipp 2013
@@ -82,4 +80,4 @@ stretch' :: Integer      -- ^ Length of resulting buffer.
          -> Salt         -- ^ The salt to use.
          -> ByteString   -- ^ Input buffer.
          -> ByteString   -- ^ Resulting key.
-stretch' n salt key = stretch defaultParams n salt key
+stretch' = stretch defaultParams
