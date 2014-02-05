@@ -139,8 +139,8 @@
 #endif
 
 #if defined(X86_INTRINSIC_SSSE3)
-	static const packedelem8 ALIGN(16) ssse3_rotl16_32bit      = {{2,3,0,1,6,7,4,5,10,11,8,9,14,15,12,13}};
-	static const packedelem8 ALIGN(16) ssse3_rotl8_32bit       = {{3,0,1,2,7,4,5,6,11,8,9,10,15,12,13,14}};
+	static const packedelem8 JANE_ALIGN(16) ssse3_rotl16_32bit      = {{2,3,0,1,6,7,4,5,10,11,8,9,14,15,12,13}};
+	static const packedelem8 JANE_ALIGN(16) ssse3_rotl8_32bit       = {{3,0,1,2,7,4,5,6,11,8,9,10,15,12,13,14}};
 #endif
 
 /*
@@ -165,8 +165,8 @@
 	#define a3(x, y, z) __asm {x, y, z}
 	#define a4(x, y, z, w) __asm {x, y, z, w}
 	#define aj(x) __asm {x}
-	#define asm_align8 a1(ALIGN 8)
-	#define asm_align16 a1(ALIGN 16)
+	#define asm_align8 a1(JANE_ALIGN 8)
+	#define asm_align16 a1(JANE_ALIGN 16)
 
 	#define asm_calling_convention STDCALL
 	#define aret(n) a1(ret n)

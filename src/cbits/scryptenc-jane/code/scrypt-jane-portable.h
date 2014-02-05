@@ -92,7 +92,7 @@
 	#define STDCALL __stdcall
 	#undef NAKED
 	#define NAKED __declspec(naked)
-	#define ALIGN(n) __declspec(align(n))
+	#define JANE_ALIGN(n) __declspec(align(n))
 #endif
 #if defined(__ICC)
 	#define COMPILER_INTEL
@@ -136,7 +136,7 @@
 	#define CDECL __attribute__((cdecl))
 	#undef STDCALL
 	#define STDCALL __attribute__((stdcall))
-	#define ALIGN(n) __attribute__((aligned(n)))
+	#define JANE_ALIGN(n) __attribute__((aligned(n)))
 	#include <stdint.h>
 #endif
 #if defined(__MINGW32__) || defined(__MINGW64__)
