@@ -70,11 +70,11 @@ source-repository head
 -------------------------------------------------------------------------------
 -- Flags
 
-flag test-properties
+flag properties
   default: True
   manual: True
 
-flag test-hlint
+flag hlint
   default: True
   manual: True
 
@@ -147,7 +147,7 @@ test-suite properties
   hs-source-dirs:   tests
   default-language: Haskell98
 
-  if !flag(test-properties)
+  if !flag(properties)
     buildable: False
   else
     build-depends:
@@ -167,7 +167,7 @@ test-suite hlint
   hs-source-dirs:   tests
   default-language: Haskell98
 
-  if !flag(test-hlint)
+  if !flag(hlint)
     buildable: False
   else
     build-depends:
