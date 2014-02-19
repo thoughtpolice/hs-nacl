@@ -11,7 +11,7 @@ in cabal.mkDerivation (self: {
   src = ./.;
   isLibrary = true;
   buildDepends = [ base64Bytestring filepath ];
-  testDepends  = [ QuickCheck hlint doctest ];
+  testDepends  = [ QuickCheck hlint doctest criterion deepseq ];
   buildTools   = [ cabalInstall_1_18_0_2 ];
   enableSplitObjs = false;
 
