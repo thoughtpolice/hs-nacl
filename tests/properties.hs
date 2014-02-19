@@ -6,6 +6,7 @@ import           Util        (driver)
 import           BLAKE       (tests)
 import           BLAKE2      (tests)
 import           Box         (tests)
+import           ChaCha20    (tests)
 import           Curve25519  (tests)
 import           Ed25519     (tests)
 import           HMACSHA512  (tests)
@@ -29,3 +30,4 @@ main = driver $ \n -> BLAKE.tests n
                    ++ SHA.tests n
                    ++ Siphash2448.tests n
                    ++ Stream.tests n
+                   ++ ChaCha20.tests n

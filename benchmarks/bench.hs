@@ -7,6 +7,7 @@ import           Criterion.Main (bgroup, defaultMain)
 import           BLAKE          (benchmarks)
 import           BLAKE2         (benchmarks)
 import           Box            (benchmarks)
+import           ChaCha20       (benchmarks)
 import           Curve25519     (benchmarks)
 import           Ed25519        (benchmarks)
 import           HMACSHA512     (benchmarks)
@@ -37,4 +38,5 @@ main = mapM (uncurry bencher) suites >>= defaultMain
              , ("Siphash24",        Siphash24.benchmarks)
              , ("Siphash48",        Siphash48.benchmarks)
              , ("Stream",           Stream.benchmarks)
+             , ("ChaCha20",         ChaCha20.benchmarks)
              ]

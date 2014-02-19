@@ -34,5 +34,6 @@ exclusions = concat . intersperse " " $ map ("--exclude="++)
              , "SecretBox"
              , "Siphash2448"
              , "Stream"
+             , "ChaCha20"
              , "Util"
              , "Main" ]
