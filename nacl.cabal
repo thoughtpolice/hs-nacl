@@ -52,7 +52,7 @@ extra-source-files:
   src/cbits/curve25519xsalsa20poly1305/*.c src/cbits/curve25519xsalsa20poly1305/*.h
   src/cbits/ed25519/*.c src/cbits/ed25519/*.h
   src/cbits/hmac-sha512256/*.c src/cbits/hmac-sha512256/*.h
-  src/cbits/poly1305/*.c src/cbits/poly1305/*.h
+  src/cbits/poly1305-donna/*.c src/cbits/poly1305-donna/*.h
   src/cbits/scryptenc-jane/*.c src/cbits/scryptenc-jane/*.h
   src/cbits/scryptenc-jane/code/*.h
   src/cbits/scrypt/*.c src/cbits/scrypt/*.h
@@ -131,7 +131,7 @@ library
     src/cbits/curve25519xsalsa20poly1305/curve25519xsalsa20poly1305.c
     src/cbits/ed25519/ed25519.c
     src/cbits/hmac-sha512256/hmac-sha512256.c
-    src/cbits/poly1305/poly1305.c
+    src/cbits/poly1305-donna/poly1305-donna.c
     src/cbits/scrypt/sha256.c src/cbits/scrypt/crypto_scrypt-sse.c
     src/cbits/sha/sha256.c src/cbits/sha/sha512.c
     src/cbits/siphash2448/siphash2448.c

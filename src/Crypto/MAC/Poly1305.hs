@@ -116,10 +116,10 @@ onetimeauthKEYBYTES = 32
 onetimeauthBYTES :: Int
 onetimeauthBYTES = 16
 
-foreign import ccall unsafe "poly1305_mac"
-  c_crypto_onetimeauth :: Ptr Word8 -> Ptr CChar -> CULLong ->
+foreign import ccall unsafe "poly1305_auth"
+  c_crypto_onetimeauth :: Ptr Word8 -> Ptr CChar -> CSize ->
                           Ptr CChar -> IO Int
 
-foreign import ccall unsafe "poly1305_mac_verify"
-  c_crypto_onetimeauth_verify :: Ptr CChar -> Ptr CChar -> CULLong ->
+foreign import ccall unsafe "poly1305_auth_verify"
+  c_crypto_onetimeauth_verify :: Ptr CChar -> Ptr CChar -> CSize ->
                                  Ptr CChar -> IO Int

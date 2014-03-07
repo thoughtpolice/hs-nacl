@@ -1,7 +1,7 @@
 #include "xsalsa20poly1305.h"
 
 #define PRIVATE_API
-#include "../poly1305/poly1305.c"
+#include "../poly1305-donna/poly1305-donna.c"
 #undef PRIVATE_API
 
 static const unsigned char sigma[16] = "expand 32-byte k";
@@ -321,7 +321,7 @@ int xsalsa20poly1305_secretbox(
   int i;
   if (mlen < 32) return -1;
   xsalsa20_stream_xor(c,m,mlen,n,k);
-  poly1305_mac(c + 16,c + 32,mlen - 32,c);
+  poly1305_auth(c + 16,c + 32,mlen - 32,c);
   for (i = 0;i < 16;++i) c[i] = 0;
   return 0;
 }
@@ -340,7 +340,7 @@ int xsalsa20poly1305_secretbox_open(
   unsigned char subkey[32];
   if (clen < 32) return -1;
   xsalsa20_stream(subkey,32,n,k);
-  if (poly1305_mac_verify(c + 16,c + 32,clen - 32,subkey) != 0) return -1;
+  if (poly1305_auth_verify(c + 16,c + 32,clen - 32,subkey) != 0) return -1;
   xsalsa20_stream_xor(m,c,clen,n,k);
   for (i = 0;i < 32;++i) m[i] = 0;
   return 0;

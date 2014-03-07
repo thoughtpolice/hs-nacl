@@ -1,4 +1,5 @@
 /src/cbits/scryptenc-jane/.git
+/src/cbits/poly1305-donna/.git
 /.cabal-sandbox/
 /dist/
 /bench/*.html
