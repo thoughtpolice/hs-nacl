@@ -127,7 +127,7 @@ curve25519 (SecretKey sk) (PublicKey pk) =
   unsafePerformIO . SU.unsafeUseAsCString sk $ \psk ->
     SU.unsafeUseAsCString pk $ \ppk ->
       SI.create cryptoDhBYTES $ \out ->
-        c_crypto_dh out ppk psk >> return ()
+        c_crypto_dh out psk ppk >> return ()
 {-# INLINE curve25519 #-}
 
 --
