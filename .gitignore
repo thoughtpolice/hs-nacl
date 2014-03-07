@@ -1,5 +1,6 @@
 /src/cbits/scryptenc-jane/.git
 /src/cbits/poly1305-donna/.git
+/src/cbits/curve25519-donna/.git
 /.cabal-sandbox/
 /dist/
 /bench/*.html

@@ -143,8 +143,8 @@ cryptoDhSECRETKEYBYTES = 32
 cryptoDhBYTES :: Int
 cryptoDhBYTES = 32
 
-foreign import ccall unsafe "curve25519_dh_keypair"
+foreign import ccall unsafe "curve25519_donna_keypair"
   c_crypto_dh_keypair :: Ptr Word8 -> Ptr Word8 -> IO CInt
 
-foreign import ccall unsafe "curve25519_dh"
+foreign import ccall unsafe "curve25519_donna"
   c_crypto_dh :: Ptr Word8 -> Ptr CChar -> Ptr CChar -> IO CInt

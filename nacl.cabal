@@ -49,6 +49,7 @@ extra-source-files:
   src/cbits/blake/*.c src/cbits/blake/*.h
   src/cbits/blake2/*.c src/cbits/blake2/*.h
   src/cbits/curve25519/*.c src/cbits/curve25519/*.h
+  src/cbits/curve25519-donna/*.c src/cbits/curve25519-donna/*.h
   src/cbits/curve25519xsalsa20poly1305/*.c src/cbits/curve25519xsalsa20poly1305/*.h
   src/cbits/ed25519/*.c src/cbits/ed25519/*.h
   src/cbits/hmac-sha512256/*.c src/cbits/hmac-sha512256/*.h
@@ -127,7 +128,7 @@ library
     src/cbits/blake/blake256.c src/cbits/blake/blake512.c
     src/cbits/blake2/blake2b-ref.c src/cbits/blake2/blake2bp-ref.c
     src/cbits/blake2/blake2s-ref.c src/cbits/blake2/blake2sp-ref.c
-    src/cbits/curve25519/curve25519.c
+    src/cbits/curve25519-donna/curve25519.c
     src/cbits/curve25519xsalsa20poly1305/curve25519xsalsa20poly1305.c
     src/cbits/ed25519/ed25519.c
     src/cbits/hmac-sha512256/hmac-sha512256.c
