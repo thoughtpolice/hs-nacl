@@ -8,14 +8,13 @@ import           Crypto.Encrypt.Box       (Box)
 import           Crypto.Nonce
 
 import           Test.QuickCheck
-import           Test.QuickCheck.Property (morallyDubiousIOProperty)
 import           Util
 
 --------------------------------------------------------------------------------
 -- Signatures
 
 nonceProp :: Nonces t => (Nonce t -> Bool) -> Property
-nonceProp k = morallyDubiousIOProperty $ k `liftM` randomNonce
+nonceProp k = ioProperty $ k `liftM` randomNonce
 
 incPure1 :: Property
 incPure1 = nonceProp $ \(n :: Nonce Box) -> incNonce n == incNonce n

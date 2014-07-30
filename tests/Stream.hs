@@ -11,14 +11,13 @@ import           Crypto.Key
 import           Crypto.Nonce
 
 import           Test.QuickCheck
-import           Test.QuickCheck.Property (morallyDubiousIOProperty)
 import           Util
 
 --------------------------------------------------------------------------------
 -- Streaming encryption
 
 streamProp :: (SecretKey Stream -> Nonce Stream -> Bool) -> Property
-streamProp k = morallyDubiousIOProperty $ liftM2 k randomKey randomNonce
+streamProp k = ioProperty $ liftM2 k randomKey randomNonce
 
 roundtrip :: ByteString -> Property
 roundtrip xs

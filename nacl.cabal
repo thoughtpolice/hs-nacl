@@ -121,7 +121,7 @@ library
   other-modules:
     Crypto.Internal.Scrypt
 
-  cc-options:   -march=native -std=gnu99
+  cc-options:   -march=native -std=gnu99 -fPIC
   include-dirs: src/cbits/util
   c-sources:
     src/cbits/util/randombytes.c src/cbits/util/nonce.c
@@ -158,7 +158,7 @@ test-suite properties
       base,
       nacl,
       bytestring,
-      QuickCheck  >= 2.4
+      QuickCheck  >= 2.7
 
 --
 -- Style/doc tests below

@@ -8,7 +8,6 @@ import           Crypto.Key
 import           Crypto.Nonce
 
 import           Test.QuickCheck
-import           Test.QuickCheck.Property (morallyDubiousIOProperty)
 import           Util
 
 --------------------------------------------------------------------------------
@@ -17,7 +16,7 @@ import           Util
 type KP = (PublicKey Box, SecretKey Box)
 
 secretboxProp :: (KP -> KP -> Nonce Box -> Bool) -> Property
-secretboxProp k = morallyDubiousIOProperty $ do
+secretboxProp k = ioProperty $ do
   kp1   <- createKeypair
   kp2   <- createKeypair
   nonce <- randomNonce
