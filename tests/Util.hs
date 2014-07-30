@@ -5,6 +5,9 @@ module Util
        , driver
        , mktest
        ) where
+
+#include "../dist/build/autogen/cabal_macros.h"
+
 import           Control.Monad
 import           Data.ByteString    (ByteString)
 import qualified Data.ByteString    as S
