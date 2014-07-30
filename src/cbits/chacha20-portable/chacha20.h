@@ -1,5 +1,5 @@
 /* chacha20-portable.c - a portable ChaCha20/8 implementation
-    NaCl compatible interface: http://nacl.cace-project.eu/stream.html
+    NaCl compatible interface: http://nacl.cr.yp.to/stream.html
 
    Written in 2014 by Austin Seipp <aseipp@pobox.com>
 

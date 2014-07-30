@@ -22,7 +22,7 @@ description:
   lead by Dan J. Bernstein and Tanja Lange. It's designed to be
   considerably faster and easier to use (e.g. simple APIs, good
   selection of default primitives) than alternative crypto libraries
-  like OpenSSL. See <http://nacl.cace-project.eu> for more.
+  like OpenSSL. See <http://nacl.cr.yp.to/> for more.
   .
   This package provides a high level interface to NaCl and all its
   basic APIs. It also includes some extra primitives for certain

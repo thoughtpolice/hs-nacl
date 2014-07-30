@@ -10,7 +10,7 @@ secure.
 
 These are the awesome Haskell bindings.
 
-[NaCl]: http://nacl.cace-project.eu
+[NaCl]: http://nacl.cr.yp.to/
 
 # Getting started
 
