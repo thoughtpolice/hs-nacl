@@ -10,7 +10,6 @@ import           Crypto.Key
 import           Crypto.Sign.Ed25519
 
 import           Test.QuickCheck
-import           Test.QuickCheck.Property (morallyDubiousIOProperty)
 import           Util
 
 --------------------------------------------------------------------------------
@@ -19,7 +18,7 @@ import           Util
 type KP = (PublicKey Ed25519, SecretKey Ed25519)
 
 keypairProp :: (KP -> Bool) -> Property
-keypairProp k = morallyDubiousIOProperty $ k `liftM` createKeypair
+keypairProp k = ioProperty $ k `liftM` createKeypair
 
 roundtrip :: ByteString -> Property
 roundtrip xs

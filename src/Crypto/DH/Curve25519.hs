@@ -54,7 +54,7 @@ import           Crypto.Key
 -- >>> import Control.Monad
 -- >>> import Test.QuickCheck
 -- >>> import Test.QuickCheck.Property
--- >>> let prop k = morallyDubiousIOProperty $ liftM2 k createKeypair createKeypair
+-- >>> let prop k = ioProperty $ liftM2 k createKeypair createKeypair
 
 -- $intro
 --

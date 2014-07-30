@@ -33,7 +33,7 @@ is not the intention of this project.
 
 # USAGE
 
-See: [http://nacl.cace-project.eu/onetimeauth.html](http://nacl.cace-project.eu/onetimeauth.html), in specific, slightly plagiarized:
+See: [http://nacl.cr.yp.to/onetimeauth.html](http://nacl.cr.yp.to/onetimeauth.html), in specific, slightly plagiarized:
 
 The poly1305_auth function, viewed as a function of the message for a uniform random key, is 
 designed to meet the standard notion of unforgeability after a single message. After the sender 

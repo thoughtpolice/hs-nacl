@@ -8,7 +8,6 @@ import           Crypto.DH.Curve25519
 import           Crypto.Key
 
 import           Test.QuickCheck
-import           Test.QuickCheck.Property (morallyDubiousIOProperty)
 import           Util
 
 --------------------------------------------------------------------------------
@@ -17,7 +16,7 @@ import           Util
 type KP = (PublicKey Curve25519, SecretKey Curve25519)
 
 keypairProp :: (KP -> KP -> Bool) -> Property
-keypairProp k = morallyDubiousIOProperty $ liftM2 k createKeypair createKeypair
+keypairProp k = ioProperty $ liftM2 k createKeypair createKeypair
 
 roundtrip :: Property
 roundtrip = keypairProp $ \(p1,s2) (p2,s1) ->

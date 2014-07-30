@@ -1,10 +1,10 @@
 {-# OPTIONS_GHC -fno-warn-orphans #-}
-{-# LANGUAGE CPP #-}
 module Util
        ( Test, Tests
        , driver
        , mktest
        ) where
+
 import           Control.Monad
 import           Data.ByteString    (ByteString)
 import qualified Data.ByteString    as S
@@ -40,9 +40,5 @@ mktest ntests prop = do
   case r of
     Success n _ _           -> return (True, n)
     GaveUp  n _ _           -> return (True, n)
-#if MIN_VERSION_QuickCheck(2,6,0)
-    Failure n _ _ _ _ _ _ _ -> return (False, n)
-#else
-    Failure n _ _ _ _ _ _   -> return (False, n)
-#endif
+    Failure n _ _ _ _ _ _ _ _ _ -> return (False, n)
     _                       -> return (False, 0)

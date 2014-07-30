@@ -9,14 +9,13 @@ import           Crypto.Key
 import           Crypto.Nonce
 
 import           Test.QuickCheck
-import           Test.QuickCheck.Property (morallyDubiousIOProperty)
 import           Util
 
 --------------------------------------------------------------------------------
 -- Authenticated secret-key encryption
 
 secretboxProp :: (SecretKey SecretBox -> Nonce SecretBox -> Bool) -> Property
-secretboxProp k = morallyDubiousIOProperty $ liftM2 k randomKey randomNonce
+secretboxProp k = ioProperty $ liftM2 k randomKey randomNonce
 
 roundtrip :: ByteString -> Property
 roundtrip xs
