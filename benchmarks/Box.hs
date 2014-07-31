@@ -18,7 +18,7 @@ benchmarks = do
   kp1@(pk1,sk1) <- createKeypair
   kp2@(pk2,sk2) <- createKeypair
   nonce <- randomNonce
-  let dummy512 = B.pack [1..512]
+  let dummy512 = B.replicate 512 3
       nm1      = createNM pk1 sk2
       nm2      = createNM pk2 sk1
   return [ bgroup "full"

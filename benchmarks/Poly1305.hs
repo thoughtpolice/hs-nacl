@@ -15,8 +15,8 @@ instance NFData Auth
 
 benchmarks :: IO [Benchmark]
 benchmarks = do
-  let dummy = B.pack [1..512]
-      k     = SecretKey (B.pack [0..31])
+  let dummy = B.replicate 512 3
+      k     = SecretKey (B.replicate 32 3)
       msg   = authenticate k dummy
   return [ bench "authenticate" $ nf (authenticate k) dummy
          , bench "verify"       $ nf (verify k)       msg
