@@ -28,4 +28,4 @@ tests ntests =
   ]
   where
     wrap :: Testable prop => prop -> IO (Bool, Int)
-    wrap = mktest ntests
+    wrap = mkArgTest ntests
