@@ -17,7 +17,7 @@ instance NFData (PublicKey t)
 benchmarks :: IO [Benchmark]
 benchmarks = do
   keys@(pk,sk) <- createKeypair
-  let dummy = B.pack [1..512]
+  let dummy = B.replicate 512 3
       msg = sign sk dummy
   return [ bench "keypair"   $ nfIO createKeypair
          , bench "sign"      $ nf (sign sk)        dummy

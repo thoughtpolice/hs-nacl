@@ -15,7 +15,7 @@ benchmarks :: IO [Benchmark]
 benchmarks = do
   key   <- randomKey
   nonce <- randomNonce
-  let dummy512 = B.pack [1..512]
+  let dummy512 = B.replicate 512 3
   return [ bench "roundtrip 512" $ nf (roundtrip key nonce) dummy512
          ]
 

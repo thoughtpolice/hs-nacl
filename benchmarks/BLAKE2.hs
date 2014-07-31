@@ -10,8 +10,8 @@ import           Util               ()
 
 benchmarks :: IO [Benchmark]
 benchmarks = return
-  [ bench "blake2b"  $ nf blake2b  (B.pack [1..512])
-  , bench "blake2bp" $ nf blake2bp (B.pack [1..512])
-  , bench "blake2s"  $ nf blake2s  (B.pack [1..512])
-  , bench "blake2sp" $ nf blake2sp (B.pack [1..512])
+  [ bench "blake2b"  $ nf blake2b  (B.replicate 512 3)
+  , bench "blake2bp" $ nf blake2bp (B.replicate 512 3)
+  , bench "blake2s"  $ nf blake2s  (B.replicate 512 3)
+  , bench "blake2sp" $ nf blake2sp (B.replicate 512 3)
   ]
