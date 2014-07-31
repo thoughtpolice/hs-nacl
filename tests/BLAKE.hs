@@ -28,7 +28,7 @@ length512 :: ByteString -> Bool
 length512 xs = S.length (blake512 xs) == 64
 
 vector256 :: Bool
-vector256 = (blake256 plainText) == expectation
+vector256 = blake256 plainText == expectation
   where
     plainText =
       "They must find it difficult -- those who take authority as the truth, \
@@ -37,7 +37,7 @@ vector256 = (blake256 plainText) == expectation
       "fb7d7ccae6d7387c90701f9a4c1a0364e5b917bfe2b95272724475a109db2d96"
 
 vector512 :: Bool
-vector512 = (blake512 plainText) == expectation
+vector512 = blake512 plainText == expectation
   where
     plainText = "It's dangerous to be right when government is wrong."
     expectation = (fst . decode)
