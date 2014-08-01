@@ -2,7 +2,8 @@
 module Util
        ( Test, Tests
        , driver
-       , mktest
+       , mkArgTest
+       , mkTest
        ) where
 
 import           Control.Monad
@@ -27,18 +28,27 @@ driver tests = do
   args <- getArgs
   let n = if null args then 100 else read (head args) :: Int
   (results, passed) <- runTests (tests n)
-  _ <- printf "Passed %d tests!\n" (sum passed)
+  _ <- printf "Performed %d tests\n" (sum passed)
   unless (and results) (fail "Not all tests passed!")
 
 runTests :: Tests -> IO ([Bool], [Int])
 runTests tests = fmap unzip . forM tests $ \(s, a) ->
   printf "%-45s: " s >> a
 
-mktest :: Testable prop => Int -> prop -> IO (Bool, Int)
-mktest ntests prop = do
+mkArgTest :: Testable prop => Int -> prop -> IO (Bool, Int)
+mkArgTest ntests prop = do
   r <- quickCheckWithResult stdArgs{maxSuccess=ntests,maxSize=ntests} prop
+  return $ extractResult r
+
+mkTest :: Testable prop => prop -> IO (Bool, Int)
+mkTest prop = do
+  r <- quickCheckResult prop
+  return $ extractResult r
+
+extractResult :: Result -> (Bool, Int)
+extractResult r =
   case r of
-    Success n _ _           -> return (True, n)
-    GaveUp  n _ _           -> return (True, n)
-    Failure n _ _ _ _ _ _ _ _ _ -> return (False, n)
-    _                       -> return (False, 0)
+    Success {numTests=n} -> (True , n)
+    GaveUp  {numTests=n} -> (True , n)
+    Failure {numTests=n} -> (False, n)
+    _                    -> (False, 0)

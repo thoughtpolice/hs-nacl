@@ -159,7 +159,8 @@ test-suite properties
       base,
       nacl,
       bytestring,
-      QuickCheck  >= 2.7
+      base16-bytestring,
+      QuickCheck >= 2.7
 
 --
 -- Style/doc tests below
