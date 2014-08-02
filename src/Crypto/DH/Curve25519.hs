@@ -99,6 +99,8 @@ data Curve25519
 
 -- | Randomly generate a public and private key for computing a shared
 -- secret.
+--
+-- >>> (alicePk, aliceSk) <- createKeypair
 createKeypair :: IO (PublicKey Curve25519, SecretKey Curve25519)
 createKeypair = do
   pk <- SI.mallocByteString cryptoDhPUBLICKEYBYTES
@@ -122,6 +124,10 @@ createKeypair = do
 -- same shared secret:
 --
 -- prop> prop $ \(p1,s2) (p2,s1) -> curve25519 s1 p1 == curve25519 s2 p2
+--
+-- >>> (alicePk, aliceSk) <- createKeypair
+-- >>> (bobPk,   bobSk)   <- createKeypair
+-- >>> let x = curve25519 aliceSk bobPk
 curve25519 :: SecretKey Curve25519 -> PublicKey Curve25519 -> ByteString
 curve25519 (SecretKey sk) (PublicKey pk) =
   unsafePerformIO . SU.unsafeUseAsCString sk $ \psk ->
