@@ -71,22 +71,46 @@ import           Data.ByteString.Unsafe   (unsafeUseAsCStringLen)
 -- finding collisions difficult.
 --
 
+-- $setup
+-- >>> :set -XOverloadedStrings
+-- >>> import Data.ByteString.Base16
+
 -- | Compute a 256-bit (32 byte) digest of an input string.
+--
+-- Example usage:
+--
+-- >>> encode $ blake2s "Hello"
+-- "f73a5fbf881f89b814871f46e26ad3fa37cb2921c5e8561618639015b3ccbb71"
 blake2s :: ByteString -> ByteString
 blake2s = hasher c_blake2s 32 B.empty
 {-# INLINE blake2s #-}
 
 -- | Compute a 256-bit (32 byte) digest of an input string.
+--
+-- Example usage:
+--
+-- >>> encode $ blake2sp "Hello"
+-- "0d6bae0db99f99183d060f7994bb94b45c6490b2a0a628b8b1346ebea8ec1d66"
 blake2sp :: ByteString -> ByteString
 blake2sp = hasher c_blake2sp 32 B.empty
 {-# INLINE blake2sp #-}
 
 -- | Compute a 512-bit (64 byte) digest of an input string.
+--
+-- Example usage:
+--
+-- >>> encode $ blake2b "Hello"
+-- "ef15eaf92d5e335345a3e1d977bc7d8797c3d275717cc1b10af79c93cda01aeb2a0c59bc02e2bdf9380fd1b54eb9e1669026930ccc24bd49748e65f9a6b2ee68"
 blake2b :: ByteString -> ByteString
 blake2b = hasher c_blake2b 64 B.empty
 {-# INLINE blake2b #-}
 
 -- | Compute a 512-bit (64 byte) digest of an input string.
+--
+-- Example usage:
+--
+-- >>> encode $ blake2bp "Hello"
+-- "10510f3c750e0dac793a46de7b6976a8ab08fe16d529a8a040eadf4bfd54b1754b7b09304839b2593b81234bccd1249abf6611f1f6c8117dcbd934136eb2e57e"
 blake2bp :: ByteString -> ByteString
 blake2bp = hasher c_blake2bp 64 B.empty
 {-# INLINE blake2bp #-}

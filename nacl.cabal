@@ -190,7 +190,7 @@ test-suite doctests
     buildable: False
   else
     build-depends:
-      base, directory, filepath, doctest >= 0.8
+      base, directory, filepath, base16-bytestring, doctest >= 0.8
 
 -------------------------------------------------------------------------------
 -- Build pt 3: benchmarks

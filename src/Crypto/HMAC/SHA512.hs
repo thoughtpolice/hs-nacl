@@ -31,6 +31,8 @@ module Crypto.HMAC.SHA512
        , randomKey    -- :: IO (SecretKey HMACSHA512)
 
          -- * Authentication
+         -- ** Example usage
+         -- $example
        , authenticate -- :: SecretKey HMACSHA512 -> ByteString -> Auth
        , verify       -- :: SecretKey HMACSHA512 -> Auth -> ByteString -> Bool
        ) where
@@ -65,12 +67,18 @@ import           System.Crypto.Random
 -- into another valid authenticator for the same message. NaCl also
 -- does not make any promises regarding \"truncated unforgeability.\"
 
+-- $setup
+-- >>> :set -XOverloadedStrings
 
 -- | A phantom type for representing types related to SHA-512-256
 -- HMACs.
 data HMACSHA512
 
 -- | Generate a random key for performing encryption.
+--
+-- Example usage:
+--
+-- >>> key <- randomKey
 randomKey :: IO (SecretKey HMACSHA512)
 randomKey = SecretKey `fmap` randombytes hmacsha512256KEYBYTES
 
@@ -110,6 +118,12 @@ verify (SecretKey k) (Auth auth) msg =
         b <- c_crypto_hmacsha512256_verify pauth cstr (fromIntegral clen) pk
         return (b == 0)
 {-# INLINE verify #-}
+
+-- $example
+-- >>> key <- randomKey
+-- >>> let a = authenticate key "Hello"
+-- >>> verify key a "Hello"
+-- True
 
 --
 -- FFI mac binding

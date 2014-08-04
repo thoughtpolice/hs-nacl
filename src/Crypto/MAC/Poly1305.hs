@@ -33,6 +33,8 @@ module Crypto.MAC.Poly1305
        , randomKey    -- :: IO (SecretKey Poly1305)
 
          -- * One-time authentication
+         -- ** Example usage
+         -- $example
        , authenticate -- :: SecretKey Poly1305 -> ByteString -> Auth
        , verify       -- :: SecretKey Poly1305 -> Auth -> ByteString -> Bool
        ) where
@@ -62,10 +64,20 @@ import           System.Crypto.Random
 -- under the same key should be expected to reveal enough information
 -- to allow forgeries of authenticators on other messages.
 
+-- $example
+-- >>> key <- randomKey
+-- >>> let a = authenticate key "Hello"
+-- >>> verify key a "Hello"
+-- True
+
 -- | A phantom type for representing types related to Poly-1305 MACs.
 data Poly1305
 
 -- | Generate a random key for performing encryption.
+--
+-- Example usage:
+--
+-- >>> key <- randomKey
 randomKey :: IO (SecretKey Poly1305)
 randomKey = SecretKey `fmap` randombytes onetimeauthKEYBYTES
 

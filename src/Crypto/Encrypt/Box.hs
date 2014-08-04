@@ -41,12 +41,18 @@ module Crypto.Encrypt.Box
          Box           -- :: *
        , createKeypair -- :: IO (PublicKey Box, SecretKey Box)
 
+         -- ** Example usage
+         -- $example
+
          -- * Encrypting messages
        , encrypt -- :: Nonce Box -> ByteString -> PublicKey Box -> SecretKey Box ->  ByteString
        , decrypt -- :: Nonce Box -> ByteString -> PublicKey Box -> SecretKey Box -> Maybe ByteString
 
          -- * Precomputation interface
          -- $precomp
+
+         -- ** Example usage
+         -- $precompExample
        , NM        -- :: *
        , createNM  -- :: PublicKey Box -> SecretKey Box -> NM
        , encryptNM -- :: NM -> Nonce Box -> ByteString -> ByteString
@@ -105,6 +111,11 @@ import           Crypto.Nonce
 -- Users who want public verifiability (or receiver-assisted public
 -- verifiability) should instead use signatures (or signcryption).
 
+-- $setup
+-- >>> :set -XOverloadedStrings
+-- >>> (alicePk, aliceSk) <- createKeypair
+-- >>> (bobPk,   bobSk)   <- createKeypair
+
 -- | A phantom type for representing types related to authenticated,
 -- public-key encryption.
 data Box
@@ -114,6 +125,10 @@ instance Nonces Box where
 
 -- | The @'createKeypair'@ function randomly generates a @'SecretKey'@
 -- and a corresponding @'PublicKey'@.
+--
+-- Example usage:
+--
+-- >>> (alicePk, aliceSk) <- createKeypair
 createKeypair :: IO (PublicKey Box, SecretKey Box)
 createKeypair = do
   pk <- SI.mallocByteString boxPUBLICKEYBYTES
@@ -184,6 +199,13 @@ decrypt (Nonce n) cipher (PublicKey pk) (SecretKey sk) = unsafePerformIO $ do
   return $! if r /= 0 then Nothing
             else Just $ SI.fromForeignPtr m zeroBYTES (clen - zeroBYTES)
 {-# INLINE decrypt #-}
+
+-- $example
+-- >>> nonce <- randomNonce :: IO (Nonce Box)
+-- >>> let cipherText    = encrypt nonce "Hello" bobPk aliceSk
+-- >>> let recoveredText = decrypt nonce cipherText alicePk bobSk
+-- >>> recoveredText == Just "Hello"
+-- True
 
 -- $precomp
 --
@@ -264,6 +286,15 @@ decryptNM (NM nm) (Nonce n) cipher = unsafePerformIO $ do
   return $! if r /= 0 then Nothing
             else Just $ SI.fromForeignPtr m zeroBYTES (clen - zeroBYTES)
 {-# INLINE decryptNM #-}
+
+-- $precompExample
+-- >>> let aliceNM = createNM bobPk aliceSk
+-- >>> let bobNM   = createNM alicePk bobSk
+-- >>> nonce <- randomNonce :: IO (Nonce Box)
+-- >>> let cipherText    = encryptNM aliceNM nonce "Hello"
+-- >>> let recoveredText = decryptNM bobNM nonce cipherText
+-- >>> recoveredText == Just "Hello"
+-- True
 
 --
 -- FFI bindings

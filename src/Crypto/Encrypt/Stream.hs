@@ -30,6 +30,8 @@ module Crypto.Encrypt.Stream
        , randomKey -- :: IO (SecretKey Stream)
 
          -- * Encrypting messages
+         -- ** Example usage
+         -- $example
        , stream    -- :: Nonce Stream -> Int -> SecretKey Stream -> ByteString
        , encrypt   -- :: Nonce Stream -> ByteString -> SecretKey Stream -> ByteString
        , decrypt   -- :: Nonce Stream -> ByteString -> SecretKey Stream -> ByteString
@@ -74,6 +76,9 @@ import           System.Crypto.Random
 -- @'stream'@ to \"related-key attacks.\" It is the caller's
 -- responsibility to use proper key-derivation functions.
 
+-- $setup
+-- >>> :set -XOverloadedStrings
+
 -- | A phantom type for representing types related to secret-key
 -- streaming encryption.
 data Stream
@@ -82,11 +87,21 @@ instance Nonces Stream where
   nonceSize _ = xsalsa20NONCEBYTES
 
 -- | Generate a random key for performing encryption.
+--
+-- Example usage:
+--
+-- >>> key <- randomKey
 randomKey :: IO (SecretKey Stream)
 randomKey = SecretKey `fmap` randombytes xsalsa20KEYBYTES
 
 -- | Given a @'Nonce'@ @n@, size @s@ and @'Key'@ @k@, @'stream' n s k@
 -- generates a cryptographic stream of length @s@.
+--
+-- Example usage:
+--
+-- >>> nonce <- randomNonce :: IO (Nonce Stream)
+-- >>> key <- randomKey
+-- >>> let ks = stream nonce 256 key
 stream :: Nonce Stream
        -- ^ Nonce
        -> Int
@@ -138,6 +153,14 @@ decrypt :: Nonce Stream
         -- ^ Plaintext
 decrypt = encrypt
 {-# INLINE decrypt #-}
+
+-- $example
+-- >>> nonce <- randomNonce :: IO (Nonce Stream)
+-- >>> key <- randomKey
+-- >>> let cipherText = encrypt nonce "Hello" key
+-- >>> let recoveredText = decrypt nonce cipherText key
+-- >>> recoveredText == "Hello"
+-- True
 
 xsalsa20KEYBYTES :: Int
 xsalsa20KEYBYTES   = 32
