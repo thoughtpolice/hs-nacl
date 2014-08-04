@@ -32,6 +32,8 @@ module Crypto.Encrypt.SecretBox
        , randomKey -- :: IO (SecretKey SecretBox)
 
          -- * Encrypting messages
+         -- ** Example usage
+         -- $example
        , encrypt -- :: Nonce SecretBox -> ByteString -> SecretKey SecretBox -> ByteString
        , decrypt -- :: Nonce SecretBox -> ByteString -> SecretKey SecretBox -> Maybe ByteString
        ) where
@@ -67,6 +69,9 @@ import           System.Crypto.Random
 -- second message, etc. Nonces are long enough that randomly generated
 -- nonces have negligible risk of collision.
 
+-- $setup
+-- >>> :set -XOverloadedStrings
+
 -- | A phantom type for representing types related to authenticated,
 -- secret-key encryption.
 data SecretBox
@@ -75,6 +80,10 @@ instance Nonces SecretBox where
   nonceSize _ = nonceBYTES
 
 -- | Generate a random key for performing encryption.
+--
+-- Example usage:
+--
+-- >>> key <- randomKey
 randomKey :: IO (SecretKey SecretBox)
 randomKey = SecretKey `fmap` randombytes keyBYTES
 
@@ -127,6 +136,14 @@ decrypt (Nonce n) cipher (SecretKey k) = unsafePerformIO $ do
 
   return $! if r /= 0 then Nothing
             else Just $ SI.fromForeignPtr m zeroBYTES (clen - zeroBYTES)
+
+-- $example
+-- >>> key <- randomKey
+-- >>> nonce <- randomNonce :: IO (Nonce SecretBox)
+-- >>> let cipherText    = encrypt nonce "Hello" key
+-- >>> let recoveredText = decrypt nonce cipherText key
+-- >>> recoveredText == Just "Hello"
+-- True
 
 keyBYTES :: Int
 keyBYTES = 32

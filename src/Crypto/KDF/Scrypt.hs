@@ -42,6 +42,10 @@ import           Data.ByteString        (ByteString)
 import           Crypto.Internal.Scrypt
 import           System.Crypto.Random   (randombytes)
 
+-- $setup
+-- >>> :set -XOverloadedStrings
+-- >>> import Data.Maybe
+
 ------------------------------------------------------------------------------
 -- $params
 --
@@ -61,6 +65,10 @@ import           System.Crypto.Random   (randombytes)
 -- the running time.
 
 -- | Create a new @'Salt'@, primarily for use when stretching a key.
+--
+-- Example usage:
+--
+-- >>> salt <- newSalt
 newSalt :: IO Salt
 newSalt = Salt `fmap` randombytes 32
 
@@ -68,6 +76,12 @@ newSalt = Salt `fmap` randombytes 32
 -- given value @buf@ will be stretched to be an @n@ byte long key with
 -- the given @salt@. This is useful for turning something like a
 -- password into a cryptographic key for encryption.
+--
+-- Example usage:
+--
+-- >>> let params = fromJust $ scryptParams 16 8 1
+-- >>> salt <- newSalt
+-- >>> let key = stretch params 64 salt "Hello"
 stretch :: ScryptParams -- ^ Scrypt parameters
         -> Integer      -- ^ Length of resulting buffer.
         -> Salt         -- ^ The salt to use.
@@ -76,6 +90,11 @@ stretch :: ScryptParams -- ^ Scrypt parameters
 stretch p n salt key = getHash (scrypt (p { bufLen = n }) salt (Pass key))
 
 -- | Equivalent to @'stretch' 'defaultParams' n salt key@
+--
+-- Example usage:
+--
+-- >>> salt <- newSalt
+-- >>> let key = stretch' 64 salt "Hello"
 stretch' :: Integer      -- ^ Length of resulting buffer.
          -> Salt         -- ^ The salt to use.
          -> ByteString   -- ^ Input buffer.

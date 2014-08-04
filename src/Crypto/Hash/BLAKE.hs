@@ -47,7 +47,16 @@ import           Data.ByteString.Unsafe   (unsafeUseAsCStringLen)
 -- attacks. In particular, the hash function is designed to make
 -- finding collisions difficult.
 
+-- $setup
+-- >>> :set -XOverloadedStrings
+-- >>> import Data.ByteString.Base16
+
 -- | Compute a 256-bit (32 byte) digest of an input string.
+--
+-- Example usage:
+--
+-- >>> encode $ blake256 "Hello"
+-- "b916964c518f7de33d32caa4956f4202e128e5fa99c75c02fd8e3a7bc5e84997"
 blake256 :: ByteString -> ByteString
 blake256 xs =
   unsafePerformIO . create 32 $ \out ->
@@ -56,6 +65,11 @@ blake256 xs =
 {-# INLINE blake256 #-}
 
 -- | Compute a 512-bit (64 byte) digest of an input string.
+--
+-- Example usage:
+--
+-- >>> encode $ blake512 "Hello"
+-- "ba0065ac574d33a88fd47b55029287ef3a5e48625f88f25c63453bb64a88fd466db0e553d289e299c54702867c42ac2c3d3a29d5bee7ebc74e078f5003a63703"
 blake512 :: ByteString -> ByteString
 blake512 xs =
   unsafePerformIO . create 64 $ \out ->

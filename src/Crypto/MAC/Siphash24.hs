@@ -32,6 +32,8 @@ module Crypto.MAC.Siphash24
        , randomKey    -- :: IO (SecretKey Siphash24)
 
          -- * Authentication
+         -- ** Example usage
+         -- $example
        , authenticate -- :: SecretKey Siphash24 -> ByteString -> Auth
        , verify       -- :: SecretKey Siphash24 -> Auth -> ByteString -> Bool
        ) where
@@ -65,6 +67,12 @@ import           System.Crypto.Random
 -- unforgeability; perhaps one valid authenticator can be converted
 -- into another valid authenticator for the same message. NaCl also
 -- does not make any promises regarding \"truncated unforgeability.\"
+
+-- $example
+-- >>> key <- randomKey
+-- >>> let a = authenticate key "Hello"
+-- >>> verify key a "Hello"
+-- True
 
 -- | A phantom type for representing types related to SipHash-2-4
 -- MACs.

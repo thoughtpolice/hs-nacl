@@ -45,7 +45,16 @@ import           Data.ByteString.Unsafe   (unsafeUseAsCStringLen)
 -- attacks. In particular, the hash function is designed to make
 -- finding collisions difficult.
 
+-- $setup
+-- >>> :set -XOverloadedStrings
+-- >>> import Data.ByteString.Base16
+
 -- | Compute a 256-bit (32 byte) digest of an input string.
+--
+-- Example usage:
+--
+-- >>> encode $ sha256 "Hello"
+-- "185f8db32271fe25f561a6fc938b2e264306ec304eda518007d1764826381969"
 sha256 :: ByteString -> ByteString
 sha256 xs =
   -- SHA256 has 32 bytes of output
@@ -55,6 +64,11 @@ sha256 xs =
 {-# INLINE sha256 #-}
 
 -- | Compute a 512-bit (64 byte) digest of an input string.
+--
+-- Example usage:
+--
+-- >>> encode $ sha512 "Hello"
+-- "3615f80c9d293ed7402687f94b22d58e529b8cc7916f8fac7fddf7fbd5af4cf777d3d795a7a00a16bf7e7f3fb9561ee9baae480da9fe7a18769e71886b03f315"
 sha512 :: ByteString -> ByteString
 sha512 xs =
   -- The default primitive of SHA512 has 64 bytes of output.
