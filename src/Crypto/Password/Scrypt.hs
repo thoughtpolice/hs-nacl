@@ -20,7 +20,6 @@
 -- For further information see
 -- <http://www.tarsnap.com/scrypt.html>. The homepage of @scrypt-jane@
 -- is at <https://github.com/floodyberry/scrypt-jane>.
---
 module Crypto.Password.Scrypt
        ( -- * Password Storage
          -- $password-storage
@@ -116,26 +115,23 @@ separate = go . B.split '|' . getEncryptedPass
     go _         = Nothing
     decodeBase64 = either (const Nothing) Just . Base64.decode
 
--- |Encrypt the password with the given parameters and a random 32-byte salt.
+-- | Encrypt the password with the given parameters and a random 32-byte salt.
 -- The salt is read from @\/dev\/urandom@ on Unix systems or @CryptoAPI@ on
 -- Windows.
---
 encryptPass :: ScryptParams -> Pass -> IO EncryptedPass
 encryptPass params pass = do
     salt <- Salt <$> randombytes 32
     return $ combine params salt (scrypt params salt pass)
 
--- |Equivalent to @encryptPass defaultParams@.
---
+-- | Equivalent to @encryptPass defaultParams@.
 encryptPass' :: Pass -> IO EncryptedPass
 encryptPass' = encryptPass defaultParams
 
--- |Verify a 'Pass' against an 'EncryptedPass'. The function also takes
---  'ScryptParams' meeting your current security requirements. In case the
---  'EncryptedPass' was generated with different parameters, the function
---  returns an updated 'EncryptedPass', generated with the given
---  'ScryptParams'. The 'Salt' is kept from the given 'EncryptedPass'.
---
+-- | Verify a 'Pass' against an 'EncryptedPass'. The function also takes
+-- 'ScryptParams' meeting your current security requirements. In case the
+-- 'EncryptedPass' was generated with different parameters, the function
+-- returns an updated 'EncryptedPass', generated with the given
+-- 'ScryptParams'. The 'Salt' is kept from the given 'EncryptedPass'.
 verifyPass
     :: ScryptParams
     -- ^ Parameters to use for updating the 'EncryptedPass'.
@@ -163,9 +159,8 @@ verifyPass newParams candidate encrypted =
                         else Just (combine newParams salt newHash)
         in (valid, newEncr)
 
--- |Check the 'Pass' against the 'EncryptedPass', using the 'ScryptParams'
---  encapsulated in the 'EncryptedPass'.
---
+-- | Check the 'Pass' against the 'EncryptedPass', using the 'ScryptParams'
+-- encapsulated in the 'EncryptedPass'.
 verifyPass' :: Pass -> EncryptedPass -> Bool
 -- We never evaluate an eventual new 'EncryptedPass' from 'verifyPass', so it is
 -- safe to pass 'undefined' to verifyPass.

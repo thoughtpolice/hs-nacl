@@ -23,9 +23,7 @@
 -- is at <https://github.com/floodyberry/scrypt-jane>.
 --
 module Crypto.KDF.Scrypt
-       ( -- * Key stretching
-         -- $key-stretching
-         -- ** Types
+       ( -- ** Types
          Salt(..) -- :: *
          -- ** Parameters
          -- $params
